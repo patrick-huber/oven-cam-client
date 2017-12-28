@@ -1,9 +1,7 @@
 {
-  "name": "ionic-templates",
-  "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "http://ionicframework.com/",
-  "private": true,
+  "name": "oven-cam-client",
+  "version": "1.0.0",
+  "author": "Patrick Huber",
   "scripts": {
     "clean": "ionic-app-scripts clean",
     "build": "ionic-app-scripts build",
@@ -37,5 +35,5 @@
     "@ionic/app-scripts": "3.1.6",
     "typescript": "2.4.2"
   },
-  "description": "An Ionic project"
+  "description": "Over cam client app based on Ionic"
 }
