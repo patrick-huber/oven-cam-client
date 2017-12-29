@@ -16,6 +16,10 @@ export class WelcomePage {
 
   constructor(public navCtrl: NavController) { }
 
+  cameraAdd() {
+    this.navCtrl.push('CameraAddPage');
+  }
+
   login() {
     this.navCtrl.push('LoginPage');
   }

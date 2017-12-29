@@ -1,6 +1,7 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BLE } from '@ionic-native/ble';
 import { Camera } from '@ionic-native/camera';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -61,6 +62,7 @@ export function provideSettings(storage: Storage) {
     Api,
     Items,
     User,
+    BLE,
     Camera,
     SplashScreen,
     StatusBar,
