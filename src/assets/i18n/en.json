@@ -8,10 +8,14 @@
   "LOGIN": "Sign in",
   "SIGNUP": "Sign up",
 
-  "CAMERA_SEARCH_TITLE_BUTTON": "Refresh",
-  "CAMERA_ADD_BUTTON": "New Oven Cam",
-  "CAMERA_SEARCH": "Search for cam",
+
   "CAMERA_ADD_TITLE": "Add New Oven Cam",
+
+  "CAMERA_SEARCH_TITLE_BUTTON": "Refresh",
+  "CAMERA_SEARCH": "Search for cam",
+
+  "CAMERA_ADD_BUTTON": "New Oven Cam",
+
 
   "TAB1_TITLE": "Items",
   "TAB2_TITLE": "Search",

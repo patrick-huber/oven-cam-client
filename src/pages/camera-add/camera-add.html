@@ -2,7 +2,7 @@
 
   <ion-navbar>
     <ion-title>{{ 'CAMERA_ADD_TITLE' | translate }}</ion-title>
-    <ion-buttons end>
+    <ion-buttons end *ngIf="currentStep === 'scan'">
       <button ion-button (click)="scan()">
         {{ 'CAMERA_SEARCH_TITLE_BUTTON' | translate }}
       </button>
@@ -13,12 +13,41 @@
 
 
 <ion-content>
-  <ion-list> 
-    
-      <h2>{{ message }}</h2>
-    
-      <!-- <button ion-item *ngFor="let device of devices" (click)="deviceSelected(device)">
-        Add new camera
-      </button> -->
-  </ion-list>
+  <div *ngIf="currentStep === 'scan'">
+    <h2>{{ message }}</h2>
+    <div *ngIf="devices.length === 1">
+      <button ion-button (click)="stepWifi()" color="primary" block>Next step</button>
+    </div>
+  </div>
+
+  <div *ngIf="currentStep === 'wifi'">
+    <h2>Wifi Info</h2>
+    <p>Please enter your Wifi username and password so we can get your camera connected and setup.</p>
+    <form (submit)="testSend()">
+      <ion-list>
+
+        <ion-item>
+          <ion-label fixed>Wifi Name</ion-label>
+          <ion-input type="text" [(ngModel)]="wifi.name" name="name"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label fixed>{{ 'PASSWORD' | translate }}</ion-label>
+          <ion-input type="password" [(ngModel)]="wifi.password" name="password"></ion-input>
+        </ion-item>
+
+        <div padding>
+          <button ion-button color="primary" block>Save and continue</button>
+        </div>
+
+      </ion-list>
+    </form>
+
+    <div padding>
+      <button ion-button color="primary" block (click)="scan()">Connect BLE</button>
+      <button ion-button color="secondary" block (click)="disconnect()">Disconncet BLE</button>
+    </div>
+    <div padding>
+      <button ion-button block (click)="read()">Read values</button>
+    </div>
+  </div>
 </ion-content>
