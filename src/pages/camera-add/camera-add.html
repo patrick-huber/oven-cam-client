@@ -2,52 +2,66 @@
 
   <ion-navbar>
     <ion-title>{{ 'CAMERA_ADD_TITLE' | translate }}</ion-title>
-    <ion-buttons end *ngIf="currentStep === 'scan'">
-      <button ion-button (click)="scan()">
-        {{ 'CAMERA_SEARCH_TITLE_BUTTON' | translate }}
-      </button>
-    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content>
+<ion-content padding>
   <div *ngIf="currentStep === 'scan'">
-    <h2>{{ message }}</h2>
+
+    <h2>Find camera</h2>
+    <p>Please make sure your oven camera is on, then click the search button.</p>
+    <div *ngIf="devices.length === 0">
+      <button ion-button color="primary" block (click)="scan()">Search for camera</button>
+    </div>
     <div *ngIf="devices.length === 1">
-      <button ion-button (click)="stepWifi()" color="primary" block>Next step</button>
+      <h3>Camera Found!</h3>
+      <button ion-button (click)="connect()" color="primary" block>Next step</button>
+    </div>
+  </div>
+
+  <div *ngIf="currentStep === 'connect'">
+    
+    <h2>Connect to camera</h2>
+    <p>Now we need to connect to the camera to setup the wifi.</p>
+    <div *ngIf="devices.length === 1">
+      <button ion-button (click)="connect()" color="primary" block>Connect to camera</button>
     </div>
   </div>
 
   <div *ngIf="currentStep === 'wifi'">
     <h2>Wifi Info</h2>
     <p>Please enter your Wifi username and password so we can get your camera connected and setup.</p>
-    <form (submit)="testSend()">
+    <form (submit)="submitWifi()">
       <ion-list>
-
         <ion-item>
-          <ion-label fixed>Wifi Name</ion-label>
+          <ion-label fixed>Wifi name</ion-label>
           <ion-input type="text" [(ngModel)]="wifi.name" name="name"></ion-input>
         </ion-item>
+        <!-- Todo: need to get list of wifi networks so user doesn't have to type it in
+        <ion-item>
+          <ion-select [(ngModel)]="wifi.name" name="wifi-name">
+            <ion-label fixed>Wifi Name</ion-label>
+            <ion-option *ngFor="let network of wifi.networks" value="{{network}}">{{network}}</ion-option>
+          </ion-select>
+        </ion-item>-->
         <ion-item>
           <ion-label fixed>{{ 'PASSWORD' | translate }}</ion-label>
           <ion-input type="password" [(ngModel)]="wifi.password" name="password"></ion-input>
         </ion-item>
 
-        <div padding>
+        <div>
           <button ion-button color="primary" block>Save and continue</button>
         </div>
 
       </ion-list>
     </form>
+  </div>
 
-    <div padding>
-      <button ion-button color="primary" block (click)="scan()">Connect BLE</button>
-      <button ion-button color="secondary" block (click)="disconnect()">Disconncet BLE</button>
-    </div>
-    <div padding>
-      <button ion-button block (click)="read()">Read values</button>
-    </div>
+  <div *ngIf="currentStep === 'success'">
+    <h2>Wifi setup successful!</h2>
+    <p>Your oven cam is setup!</p>
+      <button ion-button color="primary" block>View camera</button>
   </div>
 </ion-content>

@@ -36,5 +36,8 @@
     "@ionic/app-scripts": "3.1.6",
     "typescript": "2.4.2"
   },
-  "description": "Over cam client app based on Ionic"
+  "description": "Over cam client app based on Ionic",
+  "cordova": {
+    "plugins": {}
+  }
 }
