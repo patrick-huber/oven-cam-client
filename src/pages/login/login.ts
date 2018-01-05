@@ -2,6 +2,12 @@ import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { IonicPage, NavController, ToastController } from 'ionic-angular';
 
+import { AngularFireAuth } from 'angularfire2/auth';
+import * as firebase from 'firebase/app';
+
+import { Platform } from 'ionic-angular';
+import { Facebook } from '@ionic-native/facebook';
+
 import { User } from '../../providers/providers';
 import { MainPage } from '../pages';
 
@@ -25,7 +31,10 @@ export class LoginPage {
   constructor(public navCtrl: NavController,
     public user: User,
     public toastCtrl: ToastController,
-    public translateService: TranslateService) {
+    public translateService: TranslateService,
+    private afAuth: AngularFireAuth,
+    private fb: Facebook,
+    private platform: Platform) {
 
     this.translateService.get('LOGIN_ERROR').subscribe((value) => {
       this.loginErrorString = value;
@@ -39,12 +48,35 @@ export class LoginPage {
     }, (err) => {
       this.navCtrl.push(MainPage);
       // Unable to log in
-      let toast = this.toastCtrl.create({
-        message: this.loginErrorString,
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present();
+      this.showMessage(this.loginErrorString);
     });
+  }
+
+  signInWithFacebook() {
+    if (this.platform.is('cordova')) {
+      return this.fb.login(['email', 'public_profile']).then(res => {
+        console.log
+        const facebookCredential = firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken);
+        return firebase.auth().signInWithCredential(facebookCredential);
+      })
+    }
+    else {
+      return this.afAuth.auth
+        .signInWithPopup(new firebase.auth.FacebookAuthProvider())
+        .then(
+          res => console.log(this.navCtrl.push(MainPage)),
+          e => console.log(this.showMessage('Error signing in through Facebook: ' + e.message))
+        );
+    }
+  }
+
+  showMessage(message) {
+    // Unable to log in
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 5000,
+      position: 'top'
+    });
+    toast.present();
   }
 }

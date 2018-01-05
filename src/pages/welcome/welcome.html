@@ -6,12 +6,13 @@
       {{ 'WELCOME_INTRO' | translate }}
     </div>
   </div>
-  <div padding>
+  <div padding *ngIf="user">
+    <h1>Welcome {{user.displayName}}! <small><button (click)="logout()" title="Sign out">not you?</button></small></h1>
+    <p>No oven cams have been setup. Please add a new camera.</p>
     <button ion-button block (click)="cameraAdd()">{{ 'CAMERA_ADD_BUTTON' | translate }}</button>
-    <!-- <button ion-button block (click)="login()" class="login">{{ 'LOGIN' | translate }}</button> -->
   </div>
-  <!-- <div padding>
+  <div padding *ngIf="!user">
     <button ion-button block (click)="signup()">{{ 'SIGNUP' | translate }}</button>
     <button ion-button block (click)="login()" class="login">{{ 'LOGIN' | translate }}</button>
-  </div> -->
+  </div>
 </ion-content>

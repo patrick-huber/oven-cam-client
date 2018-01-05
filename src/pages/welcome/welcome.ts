@@ -1,6 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
 
+import { AngularFireAuth } from 'angularfire2/auth';
+import * as firebase from 'firebase/app';
+
+import { Platform } from 'ionic-angular';
+import { Facebook } from '@ionic-native/facebook';
+
 /**
  * The Welcome Page is a splash page that quickly describes the app,
  * and then directs the user to create an account or log in.
@@ -14,7 +20,26 @@ import { IonicPage, NavController } from 'ionic-angular';
 })
 export class WelcomePage {
 
-  constructor(public navCtrl: NavController) { }
+  constructor(public navCtrl: NavController,
+    private afAuth: AngularFireAuth,
+    private fb: Facebook,
+    private platform: Platform) {}
+
+  user;
+
+  ionViewWillEnter() {
+    this.afAuth.authState.subscribe((user: firebase.User) => {
+      if (!user) {
+        this.user = null;
+        return;
+      }
+      this.user = user;
+    });
+  }
+
+  logout() {
+    this.afAuth.auth.signOut();
+  }
 
   cameraAdd() {
     this.navCtrl.push('CameraAddPage');

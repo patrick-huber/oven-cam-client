@@ -10,6 +10,11 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
+import { AngularFireModule } from 'angularfire2';
+import { AngularFirestoreModule } from 'angularfire2/firestore';
+import { AngularFireAuthModule } from 'angularfire2/auth';
+import { Facebook } from '@ionic-native/facebook';
+
 import { Items } from '../mocks/providers/items';
 import { Settings } from '../providers/providers';
 import { User } from '../providers/providers';
@@ -37,6 +42,15 @@ export function provideSettings(storage: Storage) {
   });
 }
 
+export const firebaseConfig = {
+  apiKey: "AIzaSyDkfWHBz0XhUP8PRYMFYXU_PYH8BCEUHdg",
+  authDomain: "oven-cam.firebaseapp.com",
+  databaseURL: "https://oven-cam.firebaseio.com",
+  projectId: "oven-cam",
+  storageBucket: "oven-cam.appspot.com",
+  messagingSenderId: "668641174766"
+};
+
 @NgModule({
   declarations: [
     MyApp
@@ -52,7 +66,10 @@ export function provideSettings(storage: Storage) {
       }
     }),
     IonicModule.forRoot(MyApp),
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
+    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireAuthModule,
+    AngularFirestoreModule.enablePersistence() //.enablePersistence() used for offline storage
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -66,6 +83,7 @@ export function provideSettings(storage: Storage) {
     Camera,
     SplashScreen,
     StatusBar,
+    Facebook,
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler }
