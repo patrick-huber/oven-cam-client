@@ -21,8 +21,8 @@ export class LoginPage {
   // If you're using the username field with or without email, make
   // sure to add it to the type
   account: { email: string, password: string } = {
-    email: 'test@example.com',
-    password: 'test'
+    email: 'test@test.com',
+    password: 'pass123'
   };
 
   // Our translated text strings
@@ -43,31 +43,48 @@ export class LoginPage {
 
   // Attempt to login in through our User service
   doLogin() {
-    this.user.login(this.account).subscribe((resp) => {
-      this.navCtrl.push(MainPage);
-    }, (err) => {
-      this.navCtrl.push(MainPage);
-      // Unable to log in
-      this.showMessage(this.loginErrorString);
-    });
+    this.afAuth.auth.signInWithEmailAndPassword(this.account.email, this.account.password)
+      .then(
+        res => {
+          this.successSignIn(res);
+        },
+        error => {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          if (errorCode === 'auth/wrong-password') {
+            this.showMessage('Wrong password.');
+          } else {
+            this.showMessage(errorMessage);
+          }
+        }
+      );
   }
 
   signInWithFacebook() {
     if (this.platform.is('cordova')) {
       return this.fb.login(['email', 'public_profile']).then(res => {
-        console.log
         const facebookCredential = firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken);
-        return firebase.auth().signInWithCredential(facebookCredential);
+        return firebase.auth().signInWithCredential(facebookCredential)
+          .then(
+            res => this.successSignIn(res),
+            e => this.showMessage('Error signing in through Facebook: ' + e)
+          );
       })
     }
     else {
       return this.afAuth.auth
         .signInWithPopup(new firebase.auth.FacebookAuthProvider())
         .then(
-          res => console.log(this.navCtrl.push(MainPage)),
-          e => console.log(this.showMessage('Error signing in through Facebook: ' + e.message))
+          res => this.successSignIn(res),
+          e => this.showMessage('Error signing in through Facebook: ' + e.message)
         );
     }
+  }
+
+  successSignIn(user) {
+    this.user._loggedIn(user);
+    this.navCtrl.push(MainPage);
   }
 
   showMessage(message) {

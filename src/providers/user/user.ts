@@ -30,30 +30,19 @@ export class User {
   constructor(public api: Api) { }
 
   /**
-   * Send a POST request to our login endpoint with the data
-   * the user entered on the form.
-   */
-  login(accountInfo: any) {
-    let seq = this.api.post('login', accountInfo).share();
-
-    seq.subscribe((res: any) => {
-      // If the API returned a successful response, mark the user as logged in
-      if (res.status == 'success') {
-        this._loggedIn(res);
-      } else {
-      }
-    }, err => {
-      console.error('ERROR', err);
-    });
-
-    return seq;
-  }
-
-  /**
    * Send a POST request to our signup endpoint with the data
    * the user entered on the form.
    */
   signup(accountInfo: any) {
+
+    // firebase.auth.createUserWithEmailAndPassword(email, password).catch(function(error) {
+    //   // Handle Errors here.
+    //   var errorCode = error.code;
+    //   var errorMessage = error.message;
+    //   // ...
+    // });
+
+
     let seq = this.api.post('signup', accountInfo).share();
 
     seq.subscribe((res: any) => {
