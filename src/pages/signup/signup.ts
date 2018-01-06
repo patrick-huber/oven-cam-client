@@ -2,6 +2,12 @@ import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { IonicPage, NavController, ToastController } from 'ionic-angular';
 
+import { AngularFireAuth } from 'angularfire2/auth';
+import * as firebase from 'firebase/app';
+
+import { Platform } from 'ionic-angular';
+import { Facebook } from '@ionic-native/facebook';
+
 import { User } from '../../providers/providers';
 import { MainPage } from '../pages';
 
@@ -14,10 +20,9 @@ export class SignupPage {
   // The account fields for the login form.
   // If you're using the username field with or without email, make
   // sure to add it to the type
-  account: { name: string, email: string, password: string } = {
-    name: 'Test Human',
-    email: 'test@example.com',
-    password: 'test'
+  account: { email: string, password: string } = {
+    email: '',
+    password: ''
   };
 
   // Our translated text strings
@@ -26,7 +31,10 @@ export class SignupPage {
   constructor(public navCtrl: NavController,
     public user: User,
     public toastCtrl: ToastController,
-    public translateService: TranslateService) {
+    public translateService: TranslateService,
+    private afAuth: AngularFireAuth,
+    private fb: Facebook,
+    private platform: Platform) {
 
     this.translateService.get('SIGNUP_ERROR').subscribe((value) => {
       this.signupErrorString = value;
@@ -35,19 +43,58 @@ export class SignupPage {
 
   doSignup() {
     // Attempt to login in through our User service
-    this.user.signup(this.account).subscribe((resp) => {
-      this.navCtrl.push(MainPage);
-    }, (err) => {
+    this.afAuth.auth.createUserWithEmailAndPassword(this.account.email, this.account.password)
+      .then(
+        res => {
+          this.successSignUp(res);
+        },
+        error => {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          if (errorCode === 'auth/wrong-password') {
+            this.showMessage('Wrong password.');
+          } else {
+            this.showMessage(errorMessage);
+          }
+        }
+      );
+  }
 
-      this.navCtrl.push(MainPage);
+  signUpWithFacebook() {
+    if (this.platform.is('cordova')) {
+      return this.fb.login(['email', 'public_profile']).then(res => {
+        const facebookCredential = firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken);
+        return firebase.auth().signInWithCredential(facebookCredential)
+          .then(
+            res => this.successSignUp(res),
+            e => this.showMessage('Error connecting with Facebook: ' + e)
+          );
+      })
+    }
+    else {
+      return this.afAuth.auth
+        .signInWithPopup(new firebase.auth.FacebookAuthProvider())
+        .then(
+          res => this.successSignUp(res),
+          e => this.showMessage('Error connecting with Facebook: ' + e.message)
+        );
+    }
+  }
 
-      // Unable to sign up
-      let toast = this.toastCtrl.create({
-        message: this.signupErrorString,
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present();
+
+  successSignUp(user) {
+    this.user._loggedIn(user);
+    this.navCtrl.push(MainPage);
+  }
+
+  showMessage(message) {
+    // Unable to log in
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 5000,
+      position: 'top'
     });
+    toast.present();
   }
 }
