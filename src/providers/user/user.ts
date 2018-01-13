@@ -45,7 +45,7 @@ export class User {
     let seq = this.afAuth.auth.createUserWithEmailAndPassword(account.email, account.password);
 
     seq.then(
-      res => this._user = res,
+      res => this._loggedIn(res),
       error => { return error }
     );
 
@@ -69,7 +69,47 @@ export class User {
     }
 
     seq.then(
-      res => this._user = res.user,
+      res => this._loggedIn(res.user),
+      error => { return error }
+    );
+
+    return seq;
+  }
+
+  /**
+   * Login user from email and password
+   * Returns promise with user object or error message
+   */
+  logInWithEmail(account: any) {
+    let seq = this.afAuth.auth.signInWithEmailAndPassword(account.email, account.password)
+
+    seq.then(
+      res => this._loggedIn(res),
+      error => { return error }
+    );
+
+    return seq;
+  }
+
+  /**
+   * Login user from Facebook account
+   * Returns promise with user object or error message
+   * Todo: right now it creates new user if none exists. Need to check if the are user, then redirect to signup page
+   */
+  logInWithFacebook() {
+    let seq: any;
+    if (this.platform.is('cordova')) {
+      return this.fb.login(['email', 'public_profile']).then(res => {
+        const facebookCredential = firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken);
+        seq = firebase.auth().signInWithCredential(facebookCredential);
+      })
+    }
+    else {
+      seq = this.afAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider())
+    }
+
+    seq.then(
+      res => this._loggedIn(res.user),
       error => { return error }
     );
 
@@ -88,7 +128,7 @@ export class User {
         this._user = null;
         return;
       }
-      this._user = user;
+      this._loggedIn(user);
     });
 
     return seq;

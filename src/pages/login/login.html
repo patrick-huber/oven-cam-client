@@ -8,7 +8,7 @@
 
 
 <ion-content>
-  <form (submit)="doLogin()">
+  <form (submit)="logInWithEmail()">
     <ion-list>
 
       <ion-item>
@@ -39,6 +39,6 @@
   
   <hr>
   <div padding>
-    <button ion-button outline (click)="signInWithFacebook()">{{ 'LOGIN_BUTTON' | translate }} with Facebook</button>  
+    <button ion-button outline (click)="logInWithFacebook()">{{ 'LOGIN_BUTTON' | translate }} with Facebook</button>  
   </div>
 </ion-content>

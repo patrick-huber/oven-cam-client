@@ -2,12 +2,6 @@ import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { IonicPage, NavController, ToastController } from 'ionic-angular';
 
-import { AngularFireAuth } from 'angularfire2/auth';
-import * as firebase from 'firebase/app';
-
-import { Platform } from 'ionic-angular';
-import { Facebook } from '@ionic-native/facebook';
-
 import { User } from '../../providers/providers';
 import { MainPage } from '../pages';
 
@@ -31,10 +25,7 @@ export class LoginPage {
   constructor(public navCtrl: NavController,
     public user: User,
     public toastCtrl: ToastController,
-    public translateService: TranslateService,
-    private afAuth: AngularFireAuth,
-    private fb: Facebook,
-    private platform: Platform) {
+    public translateService: TranslateService) {
 
     this.translateService.get('LOGIN_ERROR').subscribe((value) => {
       this.loginErrorString = value;
@@ -42,48 +33,36 @@ export class LoginPage {
   }
 
   // Attempt to login in through our User service
-  doLogin() {
-    this.afAuth.auth.signInWithEmailAndPassword(this.account.email, this.account.password)
-      .then(
-        res => {
-          this.successSignIn(res);
-        },
-        error => {
-          // Handle Errors here.
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          if (errorCode === 'auth/wrong-password') {
-            this.showMessage('Wrong password.');
-          } else {
-            this.showMessage(errorMessage);
-          }
+  logInWithEmail() {
+    this.user.logInWithEmail(this.account).then(
+      res => {
+        this.successLogIn();
+      },
+      error => {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        if (errorCode === 'auth/wrong-password') {
+          this.showMessage('Wrong password.');
+        } else {
+          this.showMessage(errorMessage);
         }
-      );
+      }
+    );
   }
 
-  signInWithFacebook() {
-    if (this.platform.is('cordova')) {
-      return this.fb.login(['email', 'public_profile']).then(res => {
-        const facebookCredential = firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken);
-        return firebase.auth().signInWithCredential(facebookCredential)
-          .then(
-            res => this.successSignIn(res),
-            e => this.showMessage('Error signing in through Facebook: ' + e)
-          );
-      })
-    }
-    else {
-      return this.afAuth.auth
-        .signInWithPopup(new firebase.auth.FacebookAuthProvider())
-        .then(
-          res => this.successSignIn(res),
-          e => this.showMessage('Error signing in through Facebook: ' + e.message)
-        );
-    }
+  logInWithFacebook() {
+    this.user.logInWithFacebook().then(
+      res => {
+        this.successLogIn();
+      },
+      error => {
+        this.showMessage('Error signing in with Facebook: ' + error)
+      }
+    );
   }
 
-  successSignIn(user) {
-    this.user._loggedIn(user);
+  successLogIn() {
     this.navCtrl.push(MainPage);
   }
 
