@@ -2,11 +2,7 @@ import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { IonicPage, NavController, ToastController } from 'ionic-angular';
 
-import { AngularFireAuth } from 'angularfire2/auth';
-import * as firebase from 'firebase/app';
-
-import { Platform } from 'ionic-angular';
-import { Facebook } from '@ionic-native/facebook';
+import { AngularFirestore, AngularFirestoreDocument } from 'angularfire2/firestore';
 
 import { User } from '../../providers/providers';
 import { MainPage } from '../pages';
@@ -32,59 +28,48 @@ export class SignupPage {
     public user: User,
     public toastCtrl: ToastController,
     public translateService: TranslateService,
-    private afAuth: AngularFireAuth,
-    private fb: Facebook,
-    private platform: Platform) {
+    private afs: AngularFirestore) {
 
     this.translateService.get('SIGNUP_ERROR').subscribe((value) => {
       this.signupErrorString = value;
     })
   }
 
-  doSignup() {
-    // Attempt to login in through our User service
-    this.afAuth.auth.createUserWithEmailAndPassword(this.account.email, this.account.password)
-      .then(
-        res => {
-          this.successSignUp(res);
-        },
-        error => {
-          // Handle Errors here.
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          if (errorCode === 'auth/wrong-password') {
-            this.showMessage('Wrong password.');
-          } else {
-            this.showMessage(errorMessage);
-          }
+  signUpWithEmail() {
+    this.user.signUpWithEmail(this.account).then(
+      res => {
+        this.successSignUp(res);
+      },
+      error => {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        if (errorCode === 'auth/wrong-password') {
+          this.showMessage('Wrong password.');
+        } else {
+          this.showMessage(errorMessage);
         }
-      );
+      }
+    );
   }
 
   signUpWithFacebook() {
-    if (this.platform.is('cordova')) {
-      return this.fb.login(['email', 'public_profile']).then(res => {
-        const facebookCredential = firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken);
-        return firebase.auth().signInWithCredential(facebookCredential)
-          .then(
-            res => this.successSignUp(res),
-            e => this.showMessage('Error connecting with Facebook: ' + e)
-          );
-      })
-    }
-    else {
-      return this.afAuth.auth
-        .signInWithPopup(new firebase.auth.FacebookAuthProvider())
-        .then(
-          res => this.successSignUp(res),
-          e => this.showMessage('Error connecting with Facebook: ' + e.message)
-        );
-    }
+    this.user.signUpWithFacebook().then(
+      res => {
+        this.successSignUp(res.user);
+      },
+      error => {
+        this.showMessage('Error connecting with Facebook: ' + error)
+      }
+    );
   }
 
 
   successSignUp(user) {
-    this.user._loggedIn(user);
+    console.log(user);
+    // operationType === "signIn"
+    // usersCollection: AngularFirestoreCollection<Users>; //Firestore collection
+    // this.user._loggedIn(user);
     this.navCtrl.push(MainPage);
   }
 

@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
 
-import { AngularFireAuth } from 'angularfire2/auth';
-import * as firebase from 'firebase/app';
+import { User } from '../../providers/providers';
 
 /**
  * The Welcome Page is a splash page that quickly describes the app,
@@ -16,24 +15,25 @@ import * as firebase from 'firebase/app';
   templateUrl: 'welcome.html'
 })
 export class WelcomePage {
+  _user: any;
 
-  constructor(public navCtrl: NavController,
-    private afAuth: AngularFireAuth,) {}
-
-  user;
+  constructor(
+    public navCtrl: NavController,
+    public user: User) {
+      // Check to see if user is logged in at launch
+      this.user.checkLoggedIn()
+        .subscribe(
+          res => {
+            this._user = this.user._user;
+          }
+        );
+  }
 
   ionViewWillEnter() {
-    this.afAuth.authState.subscribe((user: firebase.User) => {
-      if (!user) {
-        this.user = null;
-        return;
-      }
-      this.user = user;
-    });
   }
 
   logout() {
-    this.afAuth.auth.signOut();
+    this._user = this.user.logout();
   }
 
   cameraAdd() {

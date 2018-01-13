@@ -2,7 +2,11 @@ import 'rxjs/add/operator/toPromise';
 
 import { Injectable } from '@angular/core';
 
-import { Api } from '../api/api';
+import { AngularFireAuth } from 'angularfire2/auth';
+import * as firebase from 'firebase/app';
+
+import { Platform } from 'ionic-angular';
+import { Facebook } from '@ionic-native/facebook';
 
 /**
  * Most apps have the concept of a User. This is a simple provider
@@ -25,33 +29,66 @@ import { Api } from '../api/api';
  */
 @Injectable()
 export class User {
-  _user: any;
+  _user: any = null;
 
-  constructor(public api: Api) { }
+  constructor(
+    private afAuth: AngularFireAuth,
+    private fb: Facebook,
+    private platform: Platform) { }
 
   /**
-   * Send a POST request to our signup endpoint with the data
-   * the user entered on the form.
+   * Create new user from email and password
+   * Returns promise with user object or error message
    */
-  signup(accountInfo: any) {
+  signUpWithEmail(account: any) {
 
-    // firebase.auth.createUserWithEmailAndPassword(email, password).catch(function(error) {
-    //   // Handle Errors here.
-    //   var errorCode = error.code;
-    //   var errorMessage = error.message;
-    //   // ...
-    // });
+    let seq = this.afAuth.auth.createUserWithEmailAndPassword(account.email, account.password);
 
+    seq.then(
+      res => this._user = res,
+      error => { return error }
+    );
 
-    let seq = this.api.post('signup', accountInfo).share();
+    return seq;
+  }
 
-    seq.subscribe((res: any) => {
-      // If the API returned a successful response, mark the user as logged in
-      if (res.status == 'success') {
-        this._loggedIn(res);
+  /**
+   * Create new user from Facebook account
+   * Returns promise with user object or error message
+   */
+  signUpWithFacebook() {
+    let seq: any;
+    if (this.platform.is('cordova')) {
+      this.fb.login(['email', 'public_profile']).then(res => {
+        const facebookCredential = firebase.auth.FacebookAuthProvider.credential(res.authResponse.accessToken);
+        seq =  firebase.auth().signInWithCredential(facebookCredential);
+      })
+    }
+    else {
+      seq = this.afAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider());
+    }
+
+    seq.then(
+      res => this._user = res.user,
+      error => { return error }
+    );
+
+    return seq;
+  }
+
+  /**
+   * Check if user is authenticated.
+   * Sets _user with user info or null if not authenticated.
+   */
+  checkLoggedIn() {
+    let seq = this.afAuth.authState;
+
+    seq.subscribe((user: firebase.User) => {
+      if (!user) {
+        this._user = null;
+        return;
       }
-    }, err => {
-      console.error('ERROR', err);
+      this._user = user;
     });
 
     return seq;
@@ -61,13 +98,14 @@ export class User {
    * Log the user out, which forgets the session
    */
   logout() {
+    this.afAuth.auth.signOut();
     this._user = null;
   }
 
   /**
    * Process a login/signup response to store user data
    */
-  _loggedIn(resp) {
-    this._user = resp.user;
+  _loggedIn(res) {
+    this._user = res.user;
   }
 }
