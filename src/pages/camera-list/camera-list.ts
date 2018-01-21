@@ -61,7 +61,7 @@ export class CameraListPage {
         //   }
         // },
         {
-          text: 'Remove',
+          text: 'Delete',
           role: 'destructive',
           icon: !this.platform.is('ios') ? 'trash' : null,
           handler: () => {

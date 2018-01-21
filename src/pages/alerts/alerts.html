@@ -1,0 +1,60 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Alerts</ion-title>
+
+    <ion-buttons end>
+      <button ion-button icon-only (click)="addCamera()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>
+      <ion-icon name="timer"></ion-icon>
+      Timers
+    </ion-list-header>
+
+    <ion-item-sliding>
+      <ion-item>
+        <h2>12:23</h2>
+      </ion-item>
+      <ion-item-options>
+        <button ion-button color="light" icon-start (click)="editTimer()">
+          <ion-icon name="create"></ion-icon>
+          Edit
+        </button>
+        <button ion-button color="danger" icon-start (click)="deleteTimer()">
+          <ion-icon name="trash"></ion-icon>
+          Delete
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+
+    <ion-list-header>
+      <ion-icon name="thermometer"></ion-icon>
+      Temperature alerts
+    </ion-list-header>
+
+    <ion-item-sliding>
+      <ion-item>
+        <h2>128°</h2>
+        <p>Downstairs kitchen</p>
+      </ion-item>
+      <ion-item-options>
+        <button ion-button color="light" icon-start (click)="editTemperature()">
+          <ion-icon name="create"></ion-icon>
+          Edit
+        </button>
+        <button ion-button color="danger" icon-start (click)="deleteTemperature()">
+          <ion-icon name="trash"></ion-icon>
+          Delete
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+</ion-content>
