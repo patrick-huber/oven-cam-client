@@ -1,0 +1,61 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Available Oven Cams</ion-title>
+
+    <ion-buttons end>
+      <button ion-button icon-only (click)="addCamera()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+    <ion-card (click)="cardClick()">
+      <ion-icon name='power' class='status-icon' color="danger"></ion-icon>
+      <!-- Todo: Show last image capture? <img src="img/nin-live.png"/> -->
+      <ion-card-content>
+        <ion-card-title>Downstairs Kitchen</ion-card-title>
+        <!-- <p>
+          The most popular industrial group ever, and largely
+          responsible for bringing the music to a mass audience.
+        </p> -->
+      </ion-card-content>
+      <ion-row no-padding>
+        <ion-col>
+          <button disabled ion-button clear small icon-start>
+            <ion-icon name='eye'></ion-icon>
+            View Live Cam
+          </button>
+        </ion-col>
+        <ion-col text-right>
+          <button ion-button clear small icon-start (click)="settingsClick($event)">
+            Settings 
+            <ion-icon name='more' class="icon-settings"></ion-icon>
+          </button>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+    <!-- <ion-item-sliding *ngFor="let item of currentItems">
+      
+      <button ion-item (click)="openItem(item)">
+        <ion-avatar item-start>
+          <img [src]="item.profilePic" />
+        </ion-avatar>
+        <h2>{{item.name}}</h2>
+        <p>{{item.about}}</p>
+        <ion-note item-end *ngIf="item.note">{{item.note}}</ion-note>
+      </button>
+
+      <ion-item-options>
+        <button ion-button color="danger" (click)="deleteItem(item)">
+          {{ 'DELETE_BUTTON' | translate }}
+        </button>
+      </ion-item-options>
+    </ion-item-sliding> -->
+  </ion-list>
+</ion-content>
