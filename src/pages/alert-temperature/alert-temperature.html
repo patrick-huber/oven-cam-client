@@ -1,0 +1,39 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>New/Modify Temperature Alert</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <form (submit)="logInWithEmail()">
+    <ion-list>
+
+      <ion-list-header>
+        Temperature
+        <ion-badge id="temperature-static" item-end color="danger" (click)="editTemperature()">{{temperature}}˚ F</ion-badge>
+        <!-- <span id="temperature-custom" item-end>
+          <ion-item item-end>
+            <ion-input type="number" [(ngModel)]="temperature" name="temperature-custom"></ion-input>
+          </ion-item>
+        </span> -->
+      </ion-list-header>
+      <ion-item>
+        <ion-range min="100" max="500" step="5" snaps="true" [(ngModel)]="temperature" name="temperature" color="danger">
+          <ion-icon range-left small color="danger" name="thermometer"></ion-icon>
+          <ion-icon range-right color="danger" name="thermometer"></ion-icon>
+        </ion-range>
+      </ion-item>
+
+      <div margin-top>
+        <button ion-button color="primary" block>Save</button>
+        <button ion-button outline block margin-top (click)="deleteTemperature()">Cancel</button>
+      </div>
+
+    </ion-list>
+  </form>
+
+</ion-content>

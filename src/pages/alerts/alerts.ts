@@ -25,6 +25,14 @@ export class AlertsPage {
     console.log('ionViewDidLoad AlertsPage');
   }
 
+  editTimer() {
+    this.navCtrl.push('AlertTimerPage');
+  }
+
+  editTemperature() {
+    this.navCtrl.push('AlertTemperaturePage');
+  }
+
   deleteTimer() {
     let confirm = this.alertCtrl.create({
       title: 'Delete timer?',

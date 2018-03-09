@@ -1,0 +1,27 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>New/Modify Timer</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <form (submit)="logInWithEmail()">
+    <ion-list>
+
+      <ion-item>
+        <ion-label fixed>Time</ion-label>
+        <ion-datetime displayFormat="hh:mm" hourValues="0,1,2,3,4,5,6,7,8,9,10,11,12" [(ngModel)]="temperature"></ion-datetime>
+      </ion-item>
+
+      <div>
+        <button ion-button color="primary" block>Save</button>
+      </div>
+
+    </ion-list>
+  </form>
+
+</ion-content>
