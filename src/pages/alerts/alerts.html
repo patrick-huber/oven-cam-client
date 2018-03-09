@@ -20,10 +20,9 @@
       Timers
     </ion-list-header>
 
-    <ion-item-sliding>
+    <ion-item-sliding *ngFor="let timer of _timers" name="test">
       <ion-item>
-        <h2>12:23</h2>
-        <p></p>
+        <h2>{{formatTimer(timer.length*1000*60 - (currentTime - timer.startTime))}}</h2>
       </ion-item>
       <ion-item-options>
         <button ion-button color="light" icon-start (click)="editTimer()">

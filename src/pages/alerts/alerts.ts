@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 
+import { Timers } from '../../providers/providers';
+
 /**
  * Generated class for the AlertsPage page.
  *
@@ -15,14 +17,35 @@ import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angu
 })
 export class AlertsPage {
 
+  _timers: any;
+  currentTime: object = new Date();
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    public alertCtrl: AlertController) {
+    public alertCtrl: AlertController,
+    public timers: Timers,) {
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad AlertsPage');
+  ionViewWillLoad() {
+    this.timers.load().then(() => {
+      this._timers = this.timers.allTimers;
+    });
+  }
+
+  formatTimer(milliseconds) {
+    var inputSeconds = milliseconds / 1000;
+    const secNum = parseInt(inputSeconds.toString(), 10); // don't forget the second param
+    const hours = Math.floor(secNum / 3600);
+    const minutes = Math.floor((secNum - (hours * 3600)) / 60);
+    const seconds = secNum - (hours * 3600) - (minutes * 60);
+    let hoursString = '';
+    let minutesString = '';
+    let secondsString = '';
+    hoursString = (hours < 10) ? '0' + hours : hours.toString();
+    minutesString = (minutes < 10) ? '0' + minutes : minutes.toString();
+    secondsString = (seconds < 10) ? '0' + seconds : seconds.toString();
+    return hoursString + ':' + minutesString + ':' + secondsString;
   }
 
   editTimer() {
