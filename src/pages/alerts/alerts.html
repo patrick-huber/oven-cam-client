@@ -22,7 +22,7 @@
 
     <ion-item-sliding *ngFor="let timer of _timers" name="test">
       <ion-item>
-        <h2>{{formatTimer(timer.length*1000*60 - (currentTime - timer.startTime))}}</h2>
+        <h2>{{timers.format(timer.timeRemaining)}}</h2>
       </ion-item>
       <ion-item-options>
         <button ion-button color="light" icon-start (click)="editTimer()">

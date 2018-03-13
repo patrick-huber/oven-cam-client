@@ -18,7 +18,8 @@ import { Timers } from '../../providers/providers';
 export class AlertsPage {
 
   _timers: any;
-  currentTime: object = new Date();
+  _tickTimers: any = new Array();
+  currentTime: any = new Date();
 
   constructor(
     public navCtrl: NavController,
@@ -30,22 +31,18 @@ export class AlertsPage {
   ionViewWillLoad() {
     this.timers.load().then(() => {
       this._timers = this.timers.allTimers;
+      for (let timer of this._timers) {
+        this.tick(timer);
+      }
     });
   }
 
-  formatTimer(milliseconds) {
-    var inputSeconds = milliseconds / 1000;
-    const secNum = parseInt(inputSeconds.toString(), 10); // don't forget the second param
-    const hours = Math.floor(secNum / 3600);
-    const minutes = Math.floor((secNum - (hours * 3600)) / 60);
-    const seconds = secNum - (hours * 3600) - (minutes * 60);
-    let hoursString = '';
-    let minutesString = '';
-    let secondsString = '';
-    hoursString = (hours < 10) ? '0' + hours : hours.toString();
-    minutesString = (minutes < 10) ? '0' + minutes : minutes.toString();
-    secondsString = (seconds < 10) ? '0' + seconds : seconds.toString();
-    return hoursString + ':' + minutesString + ':' + secondsString;
+  tick(timer) {
+    setTimeout(() => {
+      if (timer.timeRemaining < 1000) { return; }
+      timer.timeRemaining = timer.timeRemaining - 1000;
+      this.tick(timer);
+    }, 1000);
   }
 
   editTimer() {
@@ -77,8 +74,6 @@ export class AlertsPage {
     });
     confirm.present();
   }
-
-
 
   deleteTemperature() {
     let confirm = this.alertCtrl.create({

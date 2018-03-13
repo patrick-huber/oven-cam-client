@@ -47,14 +47,10 @@ export function provideTimers(storage: Storage) {
   /**
    * Add some timers to test. Don't forget to change times to something closer to now
    */
-  return new Timers(storage, [{
-    startTime: new Date('March 9, 2018 13:00:00'),
-    length: 90
-  },
-  {
-    startTime: new Date('March 9, 2018 13:00:00'),
-    length: 120
-  }]);
+  var timer1: number = 90*60*1000;
+  var timer2: number = 120*60*1000;
+  let testTimers = [timer1,timer2];
+  return new Timers(storage, testTimers);
 }
 
 export const firebaseConfig = {
