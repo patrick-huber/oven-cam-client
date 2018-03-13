@@ -20,6 +20,14 @@
       Timers
     </ion-list-header>
 
+    <ion-item *ngIf="_timers.length === 0">
+      No timers set
+      <button ion-button outline item-end icon-left>
+        <ion-icon name="add"></ion-icon>
+        Add new timer
+      </button>
+    </ion-item>
+
     <ion-item-sliding *ngFor="let timer of _timers" name="test">
       <ion-item>
         <h2>{{timers.format(timer.timeRemaining)}}</h2>
