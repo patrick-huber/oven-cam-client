@@ -25,16 +25,14 @@ export class AlertsPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     public alertCtrl: AlertController,
-    public timers: Timers,) {
+    public timers: Timers) {
   }
 
   ionViewWillLoad() {
-    this.timers.load().then(() => {
-      this._timers = this.timers.allTimers;
-      for (let timer of this._timers) {
-        this.tick(timer);
-      }
-    });
+    this._timers = this.timers.allTimers;
+    for (let timer of this._timers) {
+      this.tick(timer);
+    }
   }
 
   tick(timer) {

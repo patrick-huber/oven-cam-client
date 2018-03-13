@@ -42,6 +42,7 @@ export class Timers {
           this.updateTimeRemaining(timer);
         }
         this.timers = value;
+        console.log('loaded stored timers');
       }
       return this.timers;
     });
