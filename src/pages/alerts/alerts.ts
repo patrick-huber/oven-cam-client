@@ -43,8 +43,17 @@ export class AlertsPage {
     }, 1000);
   }
 
+  newTimer() {
+    this.navCtrl.push('AlertTimerPage', {
+      action: 'add'
+    });
+  }
+
   editTimer() {
-    this.navCtrl.push('AlertTimerPage');
+    this.navCtrl.push('AlertTimerPage', {
+      action: 'edit',
+      id: ''
+    });
   }
 
   editTemperature() {

@@ -11,6 +11,7 @@ import { Storage } from '@ionic/storage';
 @Injectable()
 
 export class Timer {
+  id: number; // timer id
   startTime: object; // Date object
   timerLength: number // length of timer in milliseconds
   timeRemaining: number // milliseconds remaining. Needed for tick
@@ -21,6 +22,7 @@ export class Timers {
   private TIMERS_KEY: string = '_timers';
 
   timers = [];
+  timerId = 0;
 
   _defaults: any;
 
@@ -37,11 +39,12 @@ export class Timers {
 
   load() {
     return this.storage.get(this.TIMERS_KEY).then((value) => {
-      if (value) {
+      if (value.length > 0) {
         for (let timer of value) {
           this.updateTimeRemaining(timer);
         }
         this.timers = value;
+        console.log(value)
         console.log('loaded stored timers');
       }
       return this.timers;
@@ -50,35 +53,42 @@ export class Timers {
 
   addTimer(millisecondsLength: number) {
     var newTimer: Timer = {
+      id: this.timerId,
       startTime: new Date(),
       timerLength: millisecondsLength,
       timeRemaining: millisecondsLength
     };
-    // this.tick(newTimer);
+    this.timerId++;
+
+    this.updateTimeRemaining(newTimer);
+
+    console.log('timer added');
     
     this.timers.push(newTimer);
-
-    // this.tick(this.timers[this.timers.length - 1]);
-    
     return this.storage.set(this.TIMERS_KEY, this.timers);
 
   }
 
-  remove(index: number) {
-    this.timers.slice(index, 1);
+  remove(id: number) {
+    console.log('remove timer');
+    console.log(this.timers);
+    this.timers = this.timers.filter(function( obj ) {
+      return obj.id !== id;
+    });
+    console.log('made it here');
+    console.log(this.timers);
     return this.storage.set(this.TIMERS_KEY, this.timers);
   }
 
-  modify(index: number, milliseconds: number){
-    this.timers[index].timerLength = milliseconds;
+  modify(id: number, milliseconds: number){
+    this.timers[id].timerLength = milliseconds;
     return this.storage.set(this.TIMERS_KEY, this.timers);
   }
 
-  getTimer(index: number) {
-    this.storage.get(this.TIMERS_KEY)
-      .then(timers => {
-        return timers[index];
-      });
+  getTimer(id: number) {
+    this.timers = this.timers.filter(function( obj ) {
+      return obj.id === id;
+    });
   }
 
   format(milliseconds) {
@@ -97,8 +107,17 @@ export class Timers {
   }
 
   updateTimeRemaining(timer) {
+    console.log('updateTimeRemaining')
     var timeEllapsed = Math.abs(new Date().getTime() - timer.startTime.getTime());
-    return timer.timeRemaining = timer.timerLength - timeEllapsed;
+    var timeRemaining = timer.timerLength - timeEllapsed;
+    console.log(timeRemaining);
+    if(timeRemaining > 0) {
+      return timer.timeRemaining = timer.timerLength - timeEllapsed;
+    } else {
+      // Timer ended
+      this.remove(timer.id);
+    }
+    
   }
 
   get allTimers() {

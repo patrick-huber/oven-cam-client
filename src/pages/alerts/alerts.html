@@ -22,7 +22,7 @@
 
     <ion-item *ngIf="_timers.length === 0">
       No timers set
-      <button ion-button outline item-end icon-left>
+      <button ion-button outline item-end icon-left (click)="newTimer()">
         <ion-icon name="add"></ion-icon>
         Add new timer
       </button>
