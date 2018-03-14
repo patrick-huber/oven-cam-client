@@ -1,6 +1,7 @@
 import { Api } from './api/api';
 import { Items } from '../mocks/providers/items';
 import { Settings } from './settings/settings';
+import { Notifications } from './notification/notification';
 import { Timers } from './timer/timer';
 import { User } from './user/user';
 
@@ -8,6 +9,7 @@ export {
     Api,
     Items,
     Settings,
+    Notifications,
     Timers,
     User
 };

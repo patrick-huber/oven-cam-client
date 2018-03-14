@@ -21,6 +21,7 @@ import { User } from '../providers/providers';
 import { Api } from '../providers/providers';
 import { MyApp } from './app.component';
 import { Timers } from '../providers/providers';
+import { Notifications } from '../providers/providers';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -96,7 +97,8 @@ export const firebaseConfig = {
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     { provide: Timers, useFactory: provideTimers, deps: [Storage] },
     // Keep this to enable Ionic's runtime error handling during development
-    { provide: ErrorHandler, useClass: IonicErrorHandler }
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    Notifications
   ]
 })
 export class AppModule { }
