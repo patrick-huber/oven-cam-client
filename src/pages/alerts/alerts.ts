@@ -22,9 +22,6 @@ export class AlertsPage {
   _tickTimers: any = new Array();
   currentTime: any = new Date();
 
-  notifications: any[] = [];
-  notificationDate: Date = new Date();
-
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -39,40 +36,9 @@ export class AlertsPage {
     for (let timer of this._timers) {
       this.tick(timer);
     }
-    this.test1();
-  }
 
-  test1() {
-    console.log('test1');
-
-    let currentSecs = this.notificationDate.getSeconds();
-
-    this.notificationDate.setSeconds(currentSecs + 5);
-
-    let notification = {
-        id: 'test1',
-        title: 'Hey!',
-        text: 'You just got notified :)',
-        at: this.notificationDate
-    };
-
-    this.notifications.push(notification);
-
-
-    if(this.platform.is('cordova')){
-        // Cancel any existing notifications
-        this.localNotifications.cancelAll().then(() => {
- 
-            // Schedule the new notifications
-            this.localNotifications.schedule(this.notifications);
- 
-            this.notifications = [];
- 
-            console.log('notifications set');
- 
-        });
- 
-    }
+    // add test timer
+    // this.timers.addTimer(5000);
   }
 
   tick(timer) {

@@ -13,76 +13,29 @@ import { Storage } from '@ionic/storage';
 
 export class Timer {
   id: number; // timer id
-  startTime: object; // Date object
+  startTime: Date; // Date object
   timerLength: number // length of timer in milliseconds
   timeRemaining: number // milliseconds remaining. Needed for tick
 }
 
 export class Timers {
 
-  notifications: any[] = [];
-  notificationDate: Date = new Date();
-
-
   public platform: Platform;
-  public localNotifications: LocalNotifications;
 
   private TIMERS_KEY: string = '_timers';
 
   timers = [];
   timerId = 0;
 
-  _defaults: any;
 
-
-  constructor(public storage: Storage, defaults: any) {
-    // add test timers
-    if(defaults.length) {
-      for (let testTimer of defaults) {
-        this.addTimer(testTimer);
-      }
-    }
-    // this._defaults = defaults; // loading in some temp timers from app.module for testing
-  }
-
-  test1() {
-    console.log('test1');
-
-    let currentSecs = this.notificationDate.getSeconds();
-
-    this.notificationDate.setSeconds(currentSecs + 5);
-     let notification = {
-        id: 'test1',
-        title: 'Hey!',
-        text: 'You just got notified :)',
-        at: this.notificationDate
-    };
-
-    this.notifications.push(notification);
-
-
-    if(this.platform.is('cordova')){
- 
-        // Cancel any existing notifications
-        this.localNotifications.cancelAll().then(() => {
- 
-            // Schedule the new notifications
-            this.localNotifications.schedule(this.notifications);
- 
-            this.notifications = [];
- 
-            console.log('notification set');
- 
-        });
- 
-    }
-  }
+  constructor(public storage: Storage, public localNotifications: LocalNotifications) {}
 
   load() {
     return this.storage.get(this.TIMERS_KEY).then((value) => {
       if (value.length > 0) {
         for (let timer of value) {
-          this.updateTimeRemaining(timer);
+          console.log('setting notifications for stored timers');
+          this.setNotification(timer);
         }
         this.timers = value;
         console.log(value)
@@ -101,7 +54,10 @@ export class Timers {
     };
     this.timerId++;
 
-    this.updateTimeRemaining(newTimer);
+    console.log('setting notifications for new timer');
+    this.setNotification(newTimer);
+
+    // this.updateTimeRemaining(newTimer);
 
     console.log('timer added');
     
@@ -132,7 +88,7 @@ export class Timers {
     });
   }
 
-  format(milliseconds) {
+  format(milliseconds: number) {
     var inputSeconds = milliseconds / 1000;
     const secNum = parseInt(inputSeconds.toString(), 10); // don't forget the second param
     const hours = Math.floor(secNum / 3600);
@@ -147,7 +103,32 @@ export class Timers {
     return hoursString + ':' + minutesString + ':' + secondsString;
   }
 
-  updateTimeRemaining(timer) {
+  setNotification(timer: Timer) {
+     let notification = {
+        id: timer.id,
+        title: 'Oven Cam Timer',
+        text: 'Timer for ' + this.format(timer.timerLength) + ' is done.',
+        at: new Date(timer.startTime.getTime() + timer.timerLength)
+    };
+
+    // this.notifications.push(notification);
+
+
+    // if(this.platform.is('cordova')){
+
+      // TODO: test if notifications carry over after reloading app and initilizing current timers from storage
+      // this.localNotifications.cancelAll().then(() => {
+
+        // Schedule the new notifications
+        this.localNotifications.schedule(notification);
+        // this.notifications = [];
+
+        console.log('notification set');
+      // }); 
+    // }
+  }
+
+  updateTimeRemaining(timer: Timer) {
     console.log('updateTimeRemaining')
     var timeEllapsed = Math.abs(new Date().getTime() - timer.startTime.getTime());
     var timeRemaining = timer.timerLength - timeEllapsed;
