@@ -45,12 +45,12 @@ export function provideSettings(storage: Storage) {
   });
 }
 
-export function provideTimers(storage: Storage, localNotifications: LocalNotifications) {
+export function provideTimers(storage: Storage, localNotifications: LocalNotifications, platform: Platform) {
   /**
    * Initilize storage for timers
    */
   
-  return new Timers(storage, localNotifications);
+  return new Timers(storage, localNotifications, platform);
 }
 
 export const firebaseConfig = {
@@ -97,7 +97,7 @@ export const firebaseConfig = {
     Facebook,
     LocalNotifications,
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
-    { provide: Timers, useFactory: provideTimers, deps: [Storage, LocalNotifications] },
+    { provide: Timers, useFactory: provideTimers, deps: [Storage, LocalNotifications, Platform] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]

@@ -20,15 +20,13 @@ export class Timer {
 
 export class Timers {
 
-  public platform: Platform;
-
   private TIMERS_KEY: string = '_timers';
 
   timers = [];
   timerId = 0;
 
 
-  constructor(public storage: Storage, public localNotifications: LocalNotifications) {}
+  constructor(public storage: Storage, public localNotifications: LocalNotifications, public platform: Platform) {}
 
   load() {
     return this.storage.get(this.TIMERS_KEY).then((value) => {
@@ -114,7 +112,7 @@ export class Timers {
     // this.notifications.push(notification);
 
 
-    // if(this.platform.is('cordova')){
+    if(this.platform.is('cordova')){
 
       // TODO: test if notifications carry over after reloading app and initilizing current timers from storage
       // this.localNotifications.cancelAll().then(() => {
@@ -125,7 +123,7 @@ export class Timers {
 
         console.log('notification set');
       // }); 
-    // }
+    }
   }
 
   updateTimeRemaining(timer: Timer) {
