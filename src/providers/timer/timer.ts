@@ -1,5 +1,5 @@
 import { LocalNotifications } from '@ionic-native/local-notifications';
-import { Platform } from 'ionic-angular';
+import { Platform, Events } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 
@@ -26,20 +26,30 @@ export class Timers {
   timerId = 0;
 
 
-  constructor(public storage: Storage, public localNotifications: LocalNotifications, public platform: Platform) {}
+  constructor(public storage: Storage, public localNotifications: LocalNotifications, public platform: Platform, public events: Events) {}
 
   load() {
     return this.storage.get(this.TIMERS_KEY).then((value) => {
       if (value.length > 0) {
+        this.timers = [];
         for (let timer of value) {
-          console.log('setting notifications for stored timers');
-          this.setNotification(timer);
+          console.log(timer.timeRemaining)
+          this.updateTimeRemaining(timer);
+          console.log(timer.timeRemaining)
+          if(timer.timeRemaining > 0) {
+            this.timers.push(timer);
+            console.log('setting notifications for stored timers');
+            this.setNotification(timer);
+          }
+          // Todo: add check for past timers? Do we need to notifiy of missed timer?
         }
-        this.timers = value;
-        console.log(value)
         console.log('loaded stored timers');
+        console.log(this.timers);
       }
-      return this.timers;
+
+      this.events.publish('timers:loaded', this.timers);
+      // return updated timers with expired timers removed
+      return this.storage.set(this.TIMERS_KEY, this.timers);
     });
   }
 
@@ -58,13 +68,15 @@ export class Timers {
     // this.updateTimeRemaining(newTimer);
 
     console.log('timer added');
+
+    this.events.publish('timers:added', newTimer);
     
     this.timers.push(newTimer);
     return this.storage.set(this.TIMERS_KEY, this.timers);
 
   }
 
-  remove(id: number) {
+  removeTimer(id: number) {
     console.log('remove timer');
     console.log(this.timers);
     this.timers = this.timers.filter(function( obj ) {
@@ -130,13 +142,8 @@ export class Timers {
     console.log('updateTimeRemaining')
     var timeEllapsed = Math.abs(new Date().getTime() - timer.startTime.getTime());
     var timeRemaining = timer.timerLength - timeEllapsed;
-    console.log(timeRemaining);
-    if(timeRemaining > 0) {
-      return timer.timeRemaining = timer.timerLength - timeEllapsed;
-    } else {
-      // Timer ended
-      this.remove(timer.id);
-    }
+    timer.timeRemaining = timeRemaining;
+    return timer;
     
   }
 

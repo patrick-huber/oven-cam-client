@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, Platform } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, Platform, Events } from 'ionic-angular';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
 import { Timers } from '../../providers/providers';
@@ -18,7 +18,7 @@ import { Timers } from '../../providers/providers';
 })
 export class AlertsPage {
 
-  _timers: any;
+  _timers: any = this.timers.timers;
   _tickTimers: any = new Array();
   currentTime: any = new Date();
 
@@ -28,11 +28,18 @@ export class AlertsPage {
     public alertCtrl: AlertController,
     private platform: Platform,
     public localNotifications: LocalNotifications,
-    public timers: Timers) {
+    public timers: Timers,
+    public events: Events) {
+    events.subscribe('timers:loaded', allTimers => {
+      this._timers = allTimers;
+      this.initTimers();
+    });
+    events.subscribe('timers:added', newTimer => {
+      this.tick(newTimer)
+    });
   }
 
-  ionViewWillLoad() {
-    this._timers = this.timers.allTimers;
+  initTimers() {
     for (let timer of this._timers) {
       this.tick(timer);
     }

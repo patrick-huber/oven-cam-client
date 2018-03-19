@@ -8,7 +8,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { IonicStorageModule, Storage } from '@ionic/storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { IonicApp, IonicErrorHandler, IonicModule, Platform } from 'ionic-angular';
+import { IonicApp, IonicErrorHandler, IonicModule, Platform, Events } from 'ionic-angular';
 
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
@@ -45,12 +45,12 @@ export function provideSettings(storage: Storage) {
   });
 }
 
-export function provideTimers(storage: Storage, localNotifications: LocalNotifications, platform: Platform) {
+export function provideTimers(storage: Storage, localNotifications: LocalNotifications, platform: Platform, events: Events) {
   /**
    * Initilize storage for timers
    */
   
-  return new Timers(storage, localNotifications, platform);
+  return new Timers(storage, localNotifications, platform, events);
 }
 
 export const firebaseConfig = {
@@ -97,7 +97,7 @@ export const firebaseConfig = {
     Facebook,
     LocalNotifications,
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
-    { provide: Timers, useFactory: provideTimers, deps: [Storage, LocalNotifications, Platform] },
+    { provide: Timers, useFactory: provideTimers, deps: [Storage, LocalNotifications, Platform, Events] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
