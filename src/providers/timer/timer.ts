@@ -1,4 +1,5 @@
-// import { HttpClient } from '@angular/common/http';
+import { LocalNotifications } from '@ionic-native/local-notifications';
+import { Platform } from 'ionic-angular';
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 
@@ -19,6 +20,13 @@ export class Timer {
 
 export class Timers {
 
+  notifications: any[] = [];
+  notificationDate: Date = new Date();
+
+
+  public platform: Platform;
+  public localNotifications: LocalNotifications;
+
   private TIMERS_KEY: string = '_timers';
 
   timers = [];
@@ -35,6 +43,39 @@ export class Timers {
       }
     }
     // this._defaults = defaults; // loading in some temp timers from app.module for testing
+  }
+
+  test1() {
+    console.log('test1');
+
+    let currentSecs = this.notificationDate.getSeconds();
+
+    this.notificationDate.setSeconds(currentSecs + 5);
+     let notification = {
+        id: 'test1',
+        title: 'Hey!',
+        text: 'You just got notified :)',
+        at: this.notificationDate
+    };
+
+    this.notifications.push(notification);
+
+
+    if(this.platform.is('cordova')){
+ 
+        // Cancel any existing notifications
+        this.localNotifications.cancelAll().then(() => {
+ 
+            // Schedule the new notifications
+            this.localNotifications.schedule(this.notifications);
+ 
+            this.notifications = [];
+ 
+            console.log('notification set');
+ 
+        });
+ 
+    }
   }
 
   load() {

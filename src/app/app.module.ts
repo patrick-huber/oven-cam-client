@@ -10,6 +10,8 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
+import { LocalNotifications } from '@ionic-native/local-notifications';
+
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { AngularFireAuthModule } from 'angularfire2/auth';
@@ -95,6 +97,7 @@ export const firebaseConfig = {
     Facebook,
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     { provide: Timers, useFactory: provideTimers, deps: [Storage] },
+    LocalNotifications,
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
