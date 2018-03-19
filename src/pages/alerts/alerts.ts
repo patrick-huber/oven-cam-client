@@ -50,7 +50,9 @@ export class AlertsPage {
 
   tick(timer) {
     setTimeout(() => {
-      if (timer.timeRemaining < 1000) { return; }
+      if (timer.timeRemaining < 1000) {
+        return this._timers = this.timers.removeTimer(timer.id);
+      }
       timer.timeRemaining = timer.timeRemaining - 1000;
       this.tick(timer);
     }, 1000);

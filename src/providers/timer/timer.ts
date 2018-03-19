@@ -84,7 +84,8 @@ export class Timers {
     });
     console.log('made it here');
     console.log(this.timers);
-    return this.storage.set(this.TIMERS_KEY, this.timers);
+    this.storage.set(this.TIMERS_KEY, this.timers);
+    return this.timers;
   }
 
   modify(id: number, milliseconds: number){
