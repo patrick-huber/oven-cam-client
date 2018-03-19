@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 
 import { Timers } from '../../providers/providers';
 
@@ -24,6 +24,7 @@ export class AlertTimerPage {
   constructor(
     public navCtrl: NavController,
     private navParams: NavParams,
+    public alertCtrl: AlertController,
     public timers: Timers
   ) {
     let action = navParams.get('action');
@@ -50,6 +51,33 @@ export class AlertTimerPage {
     
     var newTimerLength = timerSeconds*1000 + timerMinutes*60*1000 + timerHours*60*60*1000 // convert to milliseconds, then add together
     this.timers.addTimer(newTimerLength);
+
+    // Todo: add error messaging
+
+    this.showMessage(newTimerLength)
+  }
+
+  showMessage(timerLength: number) {
+    let confirm = this.alertCtrl.create({
+      title: 'Timer added',
+      message: 'Your new timer for ' + this.timers.format(timerLength) + ' has been set.',
+      buttons: [
+        {
+          text: 'Add another timer',
+          handler: () => {
+            this.timeInput = '00:00:00';
+          }
+        },
+        {
+          text: 'Back to alerts',
+          handler: () => {
+            this.navCtrl.pop();
+          }
+        }
+      ]
+    });
+    confirm.present();
+
   }
 
 }
