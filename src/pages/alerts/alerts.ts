@@ -64,7 +64,7 @@ export class AlertsPage {
     });
   }
 
-  editTimer() {
+  editTimer(timerId: number) {
     this.navCtrl.push('AlertTimerPage', {
       action: 'edit',
       id: ''
@@ -75,21 +75,19 @@ export class AlertsPage {
     this.navCtrl.push('AlertTemperaturePage');
   }
 
-  deleteTimer() {
+  deleteTimer(timerId: number) {
     let confirm = this.alertCtrl.create({
       title: 'Delete timer?',
       message: 'Are you sure you want to delete this timer?',
       buttons: [
         {
           text: 'Cancel',
-          handler: () => {
-            console.log('Disagree clicked');
-          }
+          role: 'cancel'
         },
         {
           text: 'Delete',
           handler: () => {
-            console.log('Agree clicked');
+            this._timers = this.timers.removeTimer(timerId);
           }
         }
       ]

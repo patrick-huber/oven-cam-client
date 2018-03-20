@@ -4,7 +4,7 @@
     <ion-title>Alerts</ion-title>
 
     <ion-buttons end>
-      <button ion-button icon-only (click)="addCamera()">
+      <button ion-button icon-only (click)="newTimer()">
         <ion-icon name="add"></ion-icon>
       </button>
     </ion-buttons>
@@ -31,11 +31,11 @@
         <h2>{{timers.format(timer.timeRemaining)}}</h2>
       </ion-item>
       <ion-item-options>
-        <button ion-button color="light" icon-start (click)="editTimer()">
+        <button ion-button color="light" icon-start (click)="editTimer(timer.id)">
           <ion-icon name="create"></ion-icon>
           Edit
         </button>
-        <button ion-button color="danger" icon-start (click)="deleteTimer()">
+        <button ion-button color="danger" icon-start (click)="deleteTimer(timer.id)">
           <ion-icon name="trash"></ion-icon>
           Delete
         </button>
