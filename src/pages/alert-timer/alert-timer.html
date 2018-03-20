@@ -1,7 +1,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>{{id ? 'Edit' : 'New'}} Timer</ion-title>
+    <ion-title>{{id === -1 ? 'New' : 'Edit'}} Timer</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -19,7 +19,7 @@
 
       <div margin-top>
         <button ion-button color="primary" block>Save</button>
-        <button ion-button outline navPop>Cancel</button>
+        <button ion-button block outline navPop>Cancel</button>
       </div>
 
     </ion-list>

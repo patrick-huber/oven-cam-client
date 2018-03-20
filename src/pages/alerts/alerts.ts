@@ -37,6 +37,7 @@ export class AlertsPage {
     events.subscribe('timers:added', newTimer => {
       this.tick(newTimer)
     });
+    console.log(navParams);
   }
 
   initTimers() {
@@ -59,20 +60,13 @@ export class AlertsPage {
   }
 
   newTimer() {
-    this.navCtrl.push('AlertTimerPage', {
-      action: 'add'
-    });
+    this.navCtrl.push('AlertTimerPage');
   }
 
   editTimer(timerId: number) {
     this.navCtrl.push('AlertTimerPage', {
-      action: 'edit',
-      id: ''
+      id: timerId
     });
-  }
-
-  editTemperature() {
-    this.navCtrl.push('AlertTemperaturePage');
   }
 
   deleteTimer(timerId: number) {
@@ -93,6 +87,10 @@ export class AlertsPage {
       ]
     });
     confirm.present();
+  }
+
+  editTemperature() {
+    this.navCtrl.push('AlertTemperaturePage');
   }
 
   deleteTemperature() {

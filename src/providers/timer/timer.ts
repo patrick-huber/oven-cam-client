@@ -20,19 +20,22 @@ export class Timers {
   private TIMERS_KEY: string = '_timers';
 
   timers = [];
-  timerId = 0;
+  timerId = 1;
 
   constructor(public storage: Storage, public localNotifications: LocalNotifications, public platform: Platform, public events: Events) {}
 
   load() {
     return this.storage.get(this.TIMERS_KEY).then((storedTimers) => {
       if (storedTimers.length > 0) {
+        console.log(storedTimers);
         this.timers = [];
         for (let timer of storedTimers) {
           this.updateTimeRemaining(timer);
           if(timer.timeRemaining > 0) {
             this.timers.push(timer);
             this.setNotification(timer);
+            // Need to increase timerId higher than the latest timer id
+            this.timerId = (timer.id >= this.timerId) ? (timer.id + 1) : this.timerId;
           }
           // Todo: add check for past timers? Do we need to notifiy of missed timer?
         }
@@ -61,23 +64,36 @@ export class Timers {
     return this.storage.set(this.TIMERS_KEY, this.timers);
   }
 
-  removeTimer(id: number) {
+  removeTimer(timerId: number) {
     this.timers = this.timers.filter(function( obj ) {
-      return obj.id !== id;
+      return obj.id !== timerId;
     });
+    
+    this.events.publish('timers:removed', timerId);
+
+    // Todo: new to remove notification
+
     this.storage.set(this.TIMERS_KEY, this.timers);
     return this.timers;
   }
 
-  modify(id: number, milliseconds: number){
-    this.timers[id].timerLength = milliseconds;
-    return this.storage.set(this.TIMERS_KEY, this.timers);
+  modify(timerId: number, milliseconds: number){
+    var foundIndex = this.timers.findIndex(x => x.id == timerId);
+    var foundTimer: Timer = this.timers[foundIndex];
+    foundTimer.timerLength = milliseconds;
+
+    this.events.publish('timers:modified', foundTimer);
+
+    this.storage.set(this.TIMERS_KEY, this.timers);
+    return this.timers;
   }
 
-  getTimer(id: number) {
-    this.timers = this.timers.filter(function( obj ) {
-      return obj.id === id;
+  getTimer(timerId: number) {
+    let timer: Timer;
+    let foundtimer = this.timers.filter(function( obj ) {
+      return obj.id === timerId;
     });
+    return timer = foundtimer[0];
   }
 
   format(milliseconds: number) {
