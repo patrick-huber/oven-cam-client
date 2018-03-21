@@ -27,7 +27,6 @@ export class Timers {
   load() {
     return this.storage.get(this.TIMERS_KEY).then((storedTimers) => {
       if (storedTimers.length > 0) {
-        console.log(storedTimers);
         this.timers = [];
         for (let timer of storedTimers) {
           this.updateTimeRemaining(timer);
@@ -71,21 +70,15 @@ export class Timers {
     
     this.events.publish('timers:removed', timerId);
 
-    // Todo: new to remove notification
+    // Todo: need to remove local notification
 
     this.storage.set(this.TIMERS_KEY, this.timers);
     return this.timers;
   }
 
   modify(timerId: number, milliseconds: number){
-    var foundIndex = this.timers.findIndex(x => x.id == timerId);
-    var foundTimer: Timer = this.timers[foundIndex];
-    foundTimer.timerLength = milliseconds;
-
-    this.events.publish('timers:modified', foundTimer);
-
-    this.storage.set(this.TIMERS_KEY, this.timers);
-    return this.timers;
+    this.removeTimer(timerId);
+    this.addTimer(milliseconds);
   }
 
   getTimer(timerId: number) {

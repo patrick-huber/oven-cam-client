@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, Platform, Events } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, AlertController, Platform, Events, List } from 'ionic-angular';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 
 import { Timers } from '../../providers/providers';
@@ -18,9 +18,13 @@ import { Timers } from '../../providers/providers';
 })
 export class AlertsPage {
 
+
+@ViewChild(List) list: List;
+
   _timers: any = this.timers.timers;
   _tickTimers: any = new Array();
   currentTime: any = new Date();
+  tickTimeout: any = new Array();
 
   constructor(
     public navCtrl: NavController,
@@ -31,13 +35,17 @@ export class AlertsPage {
     public timers: Timers,
     public events: Events) {
     events.subscribe('timers:loaded', allTimers => {
+      // console.log(this._timers);
       this._timers = allTimers;
       this.initTimers();
     });
     events.subscribe('timers:added', newTimer => {
+      this._timers = timers.allTimers;
       this.tick(newTimer)
     });
-    console.log(navParams);
+    events.subscribe('timers:removed', removedTimerId => {
+      clearTimeout(this.tickTimeout[removedTimerId]);
+    });
   }
 
   initTimers() {
@@ -50,7 +58,7 @@ export class AlertsPage {
   }
 
   tick(timer) {
-    setTimeout(() => {
+    this.tickTimeout[timer.id] = setTimeout(() => {
       if (timer.timeRemaining < 1000) {
         return this._timers = this.timers.removeTimer(timer.id);
       }
@@ -61,12 +69,14 @@ export class AlertsPage {
 
   newTimer() {
     this.navCtrl.push('AlertTimerPage');
+    this.list.closeSlidingItems();
   }
 
   editTimer(timerId: number) {
     this.navCtrl.push('AlertTimerPage', {
       id: timerId
     });
+    this.list.closeSlidingItems();
   }
 
   deleteTimer(timerId: number) {

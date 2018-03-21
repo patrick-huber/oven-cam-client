@@ -29,9 +29,7 @@ export class AlertTimerPage {
     public alertCtrl: AlertController,
     public timers: Timers
   ) {
-    console.log(navParams)
     if(navParams.get('id')) {
-      console.log(navParams.get('id'))
       this.id = navParams.get('id');
       this.currentTimer = timers.getTimer(this.id)
       this.timeInput = timers.format(this.currentTimer.timeRemaining)
