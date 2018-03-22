@@ -70,7 +70,7 @@ export class Timers {
     
     this.events.publish('timers:removed', timerId);
 
-    // Todo: need to remove local notification
+    this.cancelNotification(timerId);
 
     this.storage.set(this.TIMERS_KEY, this.timers);
     return this.timers;
@@ -118,6 +118,12 @@ export class Timers {
         // Schedule the new notifications
         this.localNotifications.schedule(notification);
       // }); 
+    }
+  }
+
+  cancelNotification(timerId) {
+    if(this.platform.is('cordova')){
+      this.localNotifications.cancel(timerId);
     }
   }
 
