@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { IonicPage, NavController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, ToastController, LoadingController } from 'ionic-angular';
 
 import { User } from '../../providers/providers';
 import { MainPage } from '../pages';
@@ -25,6 +25,7 @@ export class LoginPage {
   constructor(public navCtrl: NavController,
     public user: User,
     public toastCtrl: ToastController,
+    public loadingCtrl: LoadingController,
     public translateService: TranslateService) {
 
     this.translateService.get('LOGIN_ERROR').subscribe((value) => {
@@ -34,11 +35,18 @@ export class LoginPage {
 
   // Attempt to login in through our User service
   logInWithEmail() {
+    let loading = this.loadingCtrl.create({
+      content: 'Signing in...'
+    });
+    loading.present();
+
     this.user.logInWithEmail(this.account).then(
       res => {
+        loading.dismiss();
         this.successLogIn();
       },
       error => {
+        loading.dismiss();
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
@@ -52,11 +60,17 @@ export class LoginPage {
   }
 
   logInWithFacebook() {
+    let loading = this.loadingCtrl.create({
+      content: 'Signing in...'
+    });
+    loading.present();
     this.user.logInWithFacebook().then(
       res => {
+        loading.dismiss();
         this.successLogIn();
       },
       error => {
+        loading.dismiss();
         this.showMessage('Error signing in with Facebook: ' + error)
       }
     );

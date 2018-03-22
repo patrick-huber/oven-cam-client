@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { IonicPage, NavController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, ToastController, LoadingController } from 'ionic-angular';
 
 import { AngularFirestore, AngularFirestoreDocument } from 'angularfire2/firestore';
 
@@ -27,6 +27,7 @@ export class SignupPage {
   constructor(public navCtrl: NavController,
     public user: User,
     public toastCtrl: ToastController,
+    public loadingCtrl: LoadingController,
     public translateService: TranslateService,
     private afs: AngularFirestore) {
 
@@ -36,11 +37,17 @@ export class SignupPage {
   }
 
   signUpWithEmail() {
+    let loading = this.loadingCtrl.create({
+      content: 'Creating account...'
+    });
+    loading.present();
     this.user.signUpWithEmail(this.account).then(
       res => {
+        loading.dismiss();
         this.successSignUp(res);
       },
       error => {
+        loading.dismiss();
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
@@ -54,11 +61,17 @@ export class SignupPage {
   }
 
   signUpWithFacebook() {
+    let loading = this.loadingCtrl.create({
+      content: 'Creating account...'
+    });
+    loading.present();
     this.user.signUpWithFacebook().then(
       res => {
+        loading.dismiss();
         this.successSignUp(res.user);
       },
       error => {
+        loading.dismiss();
         this.showMessage('Error connecting with Facebook: ' + error)
       }
     );
