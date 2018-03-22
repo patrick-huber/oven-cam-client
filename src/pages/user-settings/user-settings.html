@@ -14,11 +14,11 @@
 
 
 <ion-content padding>
-  <form *ngIf="dataLoaded" (submit)="update()">
+  <form (submit)="update()">
     <ion-list>
       <ion-item>
         <ion-label>Email</ion-label>
-        <ion-input #email type="email" name="email" email [ngModel]="userSettings.email" (keyup)="updateField('email',email.value)"></ion-input>
+        <ion-input type="email" name="email" email [(ngModel)]="email"></ion-input>
       </ion-item>
 
       <div padding>

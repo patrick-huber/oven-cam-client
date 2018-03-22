@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { EmailValidator } from '@angular/forms';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ToastController, AlertController } from 'ionic-angular';
 import { AngularFirestore, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Observable';
 
@@ -19,37 +19,89 @@ import { User } from '../../providers/providers';
   templateUrl: 'user-settings.html',
 })
 export class UserSettingsPage {
-  private settingsDoc: AngularFirestoreDocument<object>;
-  settings: Observable<object>;
-  userSettings: object = {}
+  currentUser: any;
 
-  updated: boolean = false;
-  updatedSettings: object = {};
+  @Input() email: string = '';
 
-  dataLoaded: boolean = false;
-
-  constructor(private afs: AngularFirestore, user: User) {
-    this.settingsDoc = this.afs.doc<object>('users/'+user.currentUser.uid);
-    this.settings = this.settingsDoc.valueChanges()
-    var _this = this;
-    this.settingsDoc.valueChanges().subscribe(function(value) {
-      _this.userSettings = value;
-      _this.dataLoaded = true;
-    });
-
-  }
-
-  updateField(field: string, value: string) {
-    console.log('field: ' + field, ' value: ' + value)
-    this.updated = true;
-    this.updatedSettings[field] = value;
+  constructor(public toastCtrl: ToastController, private alertCtrl: AlertController, public user: User) {
+    this.currentUser = user.currentUser;
+    this.email = this.currentUser.email;
   }
 
   update() {
-    console.log(this.updatedSettings)
-    if(this.updated) {
-      this.settingsDoc.update(this.updatedSettings); 
+    let _this = this;
+    this.currentUser.updateEmail(this.email).then(function() {
+      _this.showMessage('Email address updated.')
+      // Update successful.
+    }).catch(function(error) {
+      if(error.code === 'auth/requires-recent-login') {
+        _this.reauthenticate();
+      }
+      console.log(error)
+      // An error happened.
+    });
+  }
+
+  reauthenticate() {
+    let account = {
+      email: this.currentUser.email,
+      password: ''
     }
+
+    let alert = this.alertCtrl.create({
+      title: 'Please enter your password.',
+      inputs: [
+        {
+          name: 'password',
+          placeholder: 'Password',
+          type: 'password'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Login',
+          handler: data => {
+            account.password = data.password;
+            this.user.logInWithEmail(account).then(
+              res => {
+                // loading.dismiss();
+                this.update();
+              },
+              error => {
+                // loading.dismiss();
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                if (errorCode === 'auth/wrong-password') {
+                  this.showMessage('Wrong password.');
+                } else {
+                  this.showMessage(errorMessage);
+                }
+              }
+            );
+          }
+        }
+      ]
+    });
+    alert.present();
+
+  }
+
+  showMessage(message) {
+    // Unable to log in
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 5000,
+      position: 'top'
+    });
+    toast.present();
   }
 
   ionViewDidLoad() {

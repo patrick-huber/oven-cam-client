@@ -18,7 +18,7 @@ import { Facebook } from '@ionic-native/facebook';
 @Injectable()
 export class User {
   _user: any = null;
-  
+
   private settingsDoc: AngularFirestoreDocument<object>;
   userSettings: Observable<object>;
 
@@ -186,7 +186,7 @@ export class User {
   }
 
   get currentUser() {
-    return this._user;
+    return this.afAuth.auth.currentUser;
   }
 
   get settings() {
