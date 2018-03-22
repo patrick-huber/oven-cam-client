@@ -63,7 +63,7 @@ export class LoginPage {
   }
 
   successLogIn() {
-    this.navCtrl.push(MainPage);
+    this.navCtrl.push('WelcomePage');
   }
 
   showMessage(message) {

@@ -70,7 +70,7 @@ export class SignupPage {
     // operationType === "signIn"
     // usersCollection: AngularFirestoreCollection<Users>; //Firestore collection
     // this.user._loggedIn(user);
-    this.navCtrl.push(MainPage);
+    this.navCtrl.push('WelcomePage');
   }
 
   showMessage(message) {

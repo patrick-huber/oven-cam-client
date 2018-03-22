@@ -24,7 +24,8 @@ export class WelcomePage {
       this.user.checkLoggedIn()
         .subscribe(
           res => {
-            this._user = this.user._user;
+            this._user = res;
+            console.log(this._user);
           }
         );
   }

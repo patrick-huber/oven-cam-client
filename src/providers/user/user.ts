@@ -125,8 +125,7 @@ export class User {
 
     seq.subscribe((user: firebase.User) => {
       if (!user) {
-        this._user = null;
-        return;
+        return this._user = null;
       }
       this._loggedIn(user);
     });
