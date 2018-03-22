@@ -79,10 +79,6 @@ export class SignupPage {
 
 
   successSignUp(user) {
-    console.log(user);
-    // operationType === "signIn"
-    // usersCollection: AngularFirestoreCollection<Users>; //Firestore collection
-    // this.user._loggedIn(user);
     this.navCtrl.push('WelcomePage');
   }
 

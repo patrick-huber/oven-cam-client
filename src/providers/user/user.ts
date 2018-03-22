@@ -5,6 +5,8 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 
+import { AngularFirestore } from 'angularfire2/firestore';
+
 import { Platform } from 'ionic-angular';
 import { Facebook } from '@ionic-native/facebook';
 
@@ -31,10 +33,15 @@ import { Facebook } from '@ionic-native/facebook';
 export class User {
   _user: any = null;
 
+  usersCollection: any;
+
   constructor(
     private afAuth: AngularFireAuth,
+    private afs: AngularFirestore,
     private fb: Facebook,
-    private platform: Platform) { }
+    private platform: Platform) {
+    this.usersCollection = afs.collection('users');
+  }
 
   /**
    * Create new user from email and password
@@ -45,7 +52,7 @@ export class User {
     let seq = this.afAuth.auth.createUserWithEmailAndPassword(account.email, account.password);
 
     seq.then(
-      res => this._loggedIn(res),
+      res => this.signUpSuccess(res),
       error => { return error }
     );
 
@@ -74,6 +81,20 @@ export class User {
     );
 
     return seq;
+  }
+
+  signUpSuccess(user) {
+    // Add new user details to users collection in db
+    let newUserDoc = this.usersCollection.doc(user.uid)
+    newUserDoc.set({
+      email: user.email
+    })
+    .then(function() {
+      console.log("New user doc successfully created!");
+    });
+
+    // Set logged in user
+    this._loggedIn(user);
   }
 
   /**
@@ -145,6 +166,7 @@ export class User {
    * Process a login/signup response to store user data
    */
   _loggedIn(res) {
+    console.log(res.user);
     this._user = res.user;
   }
 }
