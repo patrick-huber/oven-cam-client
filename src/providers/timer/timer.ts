@@ -26,7 +26,7 @@ export class Timers {
 
   load() {
     return this.storage.get(this.TIMERS_KEY).then((storedTimers) => {
-      if (storedTimers.length > 0) {
+      if (storedTimers && storedTimers.length > 0) {
         this.timers = [];
         for (let timer of storedTimers) {
           this.updateTimeRemaining(timer);
