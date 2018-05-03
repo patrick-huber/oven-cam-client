@@ -5,36 +5,42 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 
-import { Platform } from 'ionic-angular';
+import { AngularFirestore, AngularFirestoreDocument } from 'angularfire2/firestore';
+
+import { Observable } from 'rxjs/Observable';
+
+import { Platform, Events } from 'ionic-angular';
 import { Facebook } from '@ionic-native/facebook';
 
 /**
- * Most apps have the concept of a User. This is a simple provider
- * with stubs for login/signup/etc.
- *
- * This User provider makes calls to our API at the `login` and `signup` endpoints.
- *
- * By default, it expects `login` and `signup` to return a JSON object of the shape:
- *
- * ```json
- * {
- *   status: 'success',
- *   user: {
- *     // User fields your app needs, like "id", "name", "email", etc.
- *   }
- * }Ø
- * ```
- *
- * If the `status` field is not `success`, then an error is detected and returned.
+ * Handles user authentication via Angular Fire Authentication
  */
 @Injectable()
 export class User {
   _user: any = null;
 
+  private settingsDoc: AngularFirestoreDocument<object>;
+  userSettings: Observable<object>;
+
+  usersCollection: any;
+
   constructor(
     private afAuth: AngularFireAuth,
+    private afs: AngularFirestore,
     private fb: Facebook,
-    private platform: Platform) { }
+    private platform: Platform,
+    events: Events) {
+      this.usersCollection = afs.collection('users');
+        afAuth.authState.subscribe((user: firebase.User) => {
+        if (!user) {
+          console.log('no user logged in')
+          return this._user = null;
+        }
+        console.log('user logged in');
+        this._user = user;
+        events.publish('user:loaded', user);
+      });
+  }
 
   /**
    * Create new user from email and password
@@ -45,7 +51,7 @@ export class User {
     let seq = this.afAuth.auth.createUserWithEmailAndPassword(account.email, account.password);
 
     seq.then(
-      res => this._loggedIn(res),
+      res => this.signUpSuccess(res),
       error => { return error }
     );
 
@@ -69,11 +75,25 @@ export class User {
     }
 
     seq.then(
-      res => this._loggedIn(res.user),
+      res => this.signUpSuccess(res.user),
       error => { return error }
     );
 
     return seq;
+  }
+
+  signUpSuccess(user) {
+    // Add new user details to users collection in db
+    let newUserDoc = this.usersCollection.doc(user.uid);
+    newUserDoc.set({
+      email: user.email
+    })
+    .then(function() {
+      console.log("New user doc successfully created!");
+    });
+
+    // Set logged in user
+    this._user = user;
   }
 
   /**
@@ -120,32 +140,56 @@ export class User {
    * Check if user is authenticated.
    * Sets _user with user info or null if not authenticated.
    */
-  checkLoggedIn() {
-    let seq = this.afAuth.authState;
+  // checkLoggedIn() {
+  //   let seq = this.afAuth.authState;
 
-    seq.subscribe((user: firebase.User) => {
-      if (!user) {
-        this._user = null;
-        return;
-      }
-      this._loggedIn(user);
-    });
+  //   seq.subscribe((user: firebase.User) => {
+  //     // console.log(user);
+  //     if (!user) {
+  //       return this._user = null;
+  //     }
 
-    return seq;
-  }
+  //     return this._loggedIn(user);
+
+  //   });
+
+  //   return seq;
+  // }
 
   /**
    * Log the user out, which forgets the session
    */
   logout() {
     this.afAuth.auth.signOut();
-    this._user = null;
+    return this._user = null;
   }
 
   /**
    * Process a login/signup response to store user data
    */
   _loggedIn(res) {
-    this._user = res.user;
+    return this._user = res;
+  }
+
+  setSettings(value) {
+    // this.usersCollection.doc(user.uid)
+    // .update().then(function(doc) {
+    //   if (doc.exists) {
+    //     console.log("Document data:", doc.data());
+    //   } else {
+    //     // doc.data() will be undefined in this case
+    //     console.log("No such document!");
+    //   }
+    // }).catch(function(error) {
+    //   console.log("Error getting document:", error);
+    // });
+  }
+
+  get currentUser() {
+    return this.afAuth.auth.currentUser;
+  }
+
+  get settings() {
+    return this.userSettings;
   }
 }

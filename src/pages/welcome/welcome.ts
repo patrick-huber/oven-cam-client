@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import { IonicPage, NavController, Events } from 'ionic-angular';
 
 import { User } from '../../providers/providers';
 
@@ -19,17 +19,23 @@ export class WelcomePage {
 
   constructor(
     public navCtrl: NavController,
+    public events: Events,
     public user: User) {
       // Check to see if user is logged in at launch
-      this.user.checkLoggedIn()
-        .subscribe(
-          res => {
-            this._user = this.user._user;
-          }
-        );
+      this._user = user.currentUser;
+      var _this = this;
+      events.subscribe('user:loaded', function(loadedUser) {
+        console.log('user loaded');
+        console.log(loadedUser);
+        return _this._user = loadedUser;
+      });
   }
 
   ionViewWillEnter() {
+  }
+
+  gotoHome() {
+    this.navCtrl.push('TabsPage');
   }
 
   logout() {
