@@ -4,16 +4,29 @@
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-content scroll="false">
+<ion-content>
   <ion-grid>
     <ion-row>
       <ion-col>
-        <h2>Timer</h2>
-        <!-- Placeholder for timer module -->
+        <ion-list no-lines (click)="navTimersPage()">
+          <ion-list-header>
+            <ion-icon name="timer"></ion-icon>
+            Timers
+          </ion-list-header>
+          <ion-item *ngIf="_timers.length === 0">No timers set</ion-item>
+          <ion-item *ngFor="let timer of _timers" name="test">
+            <h2>{{timers.format(timer.timeRemaining)}}</h2>
+          </ion-item>
+        </ion-list>
       </ion-col>
       <ion-col>
-        <h2>Temperature</h2>
-        <!-- Placeholder for temp module -->
+        <ion-list no-lines>
+          <ion-list-header>
+            <ion-icon name="thermometer"></ion-icon>
+            Temperature alerts
+          </ion-list-header>
+          <ion-item>Temperature alerts coming soon.</ion-item>
+        </ion-list>
       </ion-col>
     </ion-row>
   </ion-grid>

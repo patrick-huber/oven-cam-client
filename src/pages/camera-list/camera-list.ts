@@ -31,7 +31,7 @@ export class CameraListPage {
   }
 
   cardClick() {
-    alert('cardClick');
+    this.navCtrl.push('CameraViewPage');
   }
 
   settingsClick(e: Event) {

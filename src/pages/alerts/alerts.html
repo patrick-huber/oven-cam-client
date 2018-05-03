@@ -27,9 +27,9 @@
     <ion-item *ngIf="_timers.length === 0">No timers set</ion-item>
 
     <ion-item-sliding *ngFor="let timer of _timers" name="test">
-      <ion-item>
+      <button ion-item (click)="editTimer(timer.id)">
         <h2>{{timers.format(timer.timeRemaining)}}</h2>
-      </ion-item>
+      </button>
       <ion-item-options>
         <button ion-button color="light" icon-start (click)="editTimer(timer.id)">
           <ion-icon name="create"></ion-icon>

@@ -11,7 +11,7 @@ import { IonicPage } from 'ionic-angular';
   templateUrl: 'camera-stream.html',
 })
 export class CameraStreamPage {
-  ogSrc: String = 'http://10.0.0.31:3000/images/still.jpg';
+  ogSrc: String = 'http://10.0.0.59:3000/images/still.jpg';
   imgSrc: String = this.ogSrc;
   streamInterval: any;
 
