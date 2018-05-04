@@ -1,6 +1,12 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform, ActionSheetController } from 'ionic-angular';
 
+import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
+
+import { Observable } from 'rxjs/Observable';
+
+import { User } from '../../providers/providers';
+
 /**
  * Generated class for the CameraListPage page.
  *
@@ -14,12 +20,32 @@ import { IonicPage, NavController, NavParams, Platform, ActionSheetController } 
   templateUrl: 'camera-list.html',
 })
 export class CameraListPage {
+  _cameras: Array<Observable<any>> = [];
+  _user: any = null;
+  _camerasCollection: AngularFirestoreCollection<any>;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public platform: Platform,
-    public actionSheetCtrl: ActionSheetController) {
+    public actionSheetCtrl: ActionSheetController,
+    private afs: AngularFirestore,
+    public user: User) {
+      this._user = user.currentUser;
+      this._camerasCollection = this.afs.collection('cameras');
+      this.afs.collection('users').doc(this._user.uid).collection<any>('cameras').valueChanges()
+        .subscribe((cameras: any) => {
+          this._cameras = [];
+          for (var i = cameras.length - 1; i >= 0; i--) {
+            this.getCamera(cameras[i].id);
+          }
+      });
+  }
+
+  getCamera(cameraId) {
+    this._camerasCollection.doc(cameraId).valueChanges().subscribe((camera: any) => {
+      this._cameras.push(camera);
+    });
   }
 
   ionViewDidLoad() {
