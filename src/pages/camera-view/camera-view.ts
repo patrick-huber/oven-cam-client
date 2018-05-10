@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { Timers } from '../../providers/providers';
 
@@ -16,16 +16,36 @@ import { Timers } from '../../providers/providers';
   templateUrl: 'camera-view.html',
 })
 export class CameraViewPage {
+  httpSrc: string = '';
+  ogSrc: string = '';
+  imgSrc: string = '';
+  streamInterval: any;
 
   _timers: any = this.timers.timers;
 
   constructor(
     public navCtrl: NavController,
+    public navParams: NavParams,
     public timers: Timers) {
+    this.httpSrc = 'http://' + navParams.get('ip_address');
+    this.ogSrc = this.httpSrc + '/images/still.jpg';
+    this.imgSrc = this.httpSrc + this.ogSrc;
+    this.startStream();
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad CameraViewPage');
+  }
+
+  startStream() {
+    this.streamInterval = setInterval(() => { 
+      let d = new Date();
+      this.imgSrc = this.ogSrc + '?' + String(d.getTime());
+    }, 1000);
+  }
+
+  stopStream() {
+    clearTimeout(this.streamInterval);
   }
 
   navTimersPage(){

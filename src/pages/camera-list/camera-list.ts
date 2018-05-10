@@ -14,13 +14,24 @@ import { User } from '../../providers/providers';
  * Ionic pages and navigation.
  */
 
+interface CameraOptions {
+  battery_level: number,
+  charging: boolean,
+  local_ip: string,
+  name: string,
+  id: string,
+  status: string
+}
+
 @IonicPage()
 @Component({
   selector: 'page-camera-list',
   templateUrl: 'camera-list.html',
 })
 export class CameraListPage {
-  _cameras: Array<Observable<any>> = [];
+  // cameraOptions: Observable<CameraOptions>;
+
+  _cameras: Array<CameraOptions> = [];
   _user: any = null;
   _camerasCollection: AngularFirestoreCollection<any>;
 
@@ -50,9 +61,7 @@ export class CameraListPage {
       camera.id = cameraId;
       // Check if cam aleady in array
       let camera_index: number = -1;
-      this._cameras.find(function(cameraId, index) {
-        camera_index = index;
-      });
+      camera_index = this._cameras.findIndex(camera => camera.id === cameraId);
       if(camera_index === -1){
         // no camera in cameras array, push new camera object
         this._cameras.push(camera);
@@ -78,9 +87,16 @@ export class CameraListPage {
     this.navCtrl.push('CameraAddPage');
   }
 
-  viewCam(camId) {
-    console.log(camId);
-    this.navCtrl.push('CameraViewPage');
+  viewCam(cameraId) {
+    let foundCamera: any[] = this._cameras.filter(function( obj ) {
+      return obj.id === cameraId;
+    });
+    console.log('foundCamera: ' + foundCamera);
+    let ip = foundCamera[0].local_ip;
+    console.log('ip: ' + ip);
+    this.navCtrl.push('CameraViewPage', {
+      ip_address: ip
+    });
   }
 
   settingsClick(e: Event, cameraId: string) {
