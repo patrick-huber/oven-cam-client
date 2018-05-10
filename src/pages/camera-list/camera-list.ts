@@ -48,11 +48,17 @@ export class CameraListPage {
     this._camerasCollection.doc(cameraId).valueChanges().subscribe((camera: any) => {
       camera.id = cameraId;
       // Check if cam aleady in array
-      let scope = this;
+      let camera_index: number = -1;
       this._cameras.find(function(cameraId, index) {
-        scope._cameras[index] = camera;
+        camera_index = index;
       });
-      this._cameras.push(camera);
+      if(camera_index === -1){
+        // no camera in cameras array, push new camera object
+        this._cameras.push(camera);
+      } else {
+        // camera already in arry, update current object
+        this._cameras[camera_index] = camera;
+      }
     });
   }
 
