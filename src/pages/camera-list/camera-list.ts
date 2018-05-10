@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform, ActionSheetController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform, ActionSheetController, AlertController } from 'ionic-angular';
 
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
 
@@ -29,6 +29,7 @@ export class CameraListPage {
     public navParams: NavParams,
     public platform: Platform,
     public actionSheetCtrl: ActionSheetController,
+    private alertCtrl: AlertController,
     private afs: AngularFirestore,
     public user: User) {
       this._user = user.currentUser;
@@ -62,6 +63,13 @@ export class CameraListPage {
     });
   }
 
+  renameCamera(cameraId, new_name) {
+    this._camerasCollection.doc(cameraId).set({
+      name: new_name
+    }, {merge: true});
+    // todo: add success and error messaging
+  }
+
   ionViewDidLoad() {
     console.log('ionViewDidLoad CameraListPage');
   }
@@ -75,7 +83,7 @@ export class CameraListPage {
     this.navCtrl.push('CameraViewPage');
   }
 
-  settingsClick(e: Event) {
+  settingsClick(e: Event, cameraId: string) {
     e.stopPropagation();
     let actionSheet = this.actionSheetCtrl.create({
       title: 'Edit cam settings',
@@ -84,23 +92,30 @@ export class CameraListPage {
           text: 'Rename',
           icon: !this.platform.is('ios') ? 'create' : null,
           handler: () => {
-            console.log('Rename clicked');
+            let alert = this.alertCtrl.create({
+                title: 'Rename cam',
+                inputs: [
+                  {
+                    name: 'name',
+                    placeholder: 'New Name'
+                  }
+                ],
+                buttons: [
+                  {
+                    text: 'Cancel',
+                    role: 'cancel'
+                  },
+                  {
+                    text: 'Save',
+                    handler: data => {
+                      this.renameCamera(cameraId, data.name);
+                    }
+                  }
+                ]
+              });
+              alert.present();
           }
         },
-        // {
-        //   text: 'Share',
-        //   icon: !this.platform.is('ios') ? 'share' : null,
-        //   handler: () => {
-        //     console.log('Share clicked');
-        //   }
-        // },
-        // {
-        //   text: 'Favorite',
-        //   icon: !this.platform.is('ios') ? 'heart-outline' : null,
-        //   handler: () => {
-        //     console.log('Favorite clicked');
-        //   }
-        // },
         {
           text: 'Delete',
           role: 'destructive',
