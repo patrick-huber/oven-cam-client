@@ -35,15 +35,23 @@ export class CameraListPage {
       this._camerasCollection = this.afs.collection('cameras');
       this.afs.collection('users').doc(this._user.uid).collection<any>('cameras').valueChanges()
         .subscribe((cameras: any) => {
+          console.log('subscribe fire');
           this._cameras = [];
           for (var i = cameras.length - 1; i >= 0; i--) {
             this.getCamera(cameras[i].id);
           }
+          console.log(this._cameras)
       });
   }
 
   getCamera(cameraId) {
     this._camerasCollection.doc(cameraId).valueChanges().subscribe((camera: any) => {
+      camera.id = cameraId;
+      // Check if cam aleady in array
+      let scope = this;
+      this._cameras.find(function(cameraId, index) {
+        scope._cameras[index] = camera;
+      });
       this._cameras.push(camera);
     });
   }
@@ -56,7 +64,8 @@ export class CameraListPage {
     this.navCtrl.push('CameraAddPage');
   }
 
-  cardClick() {
+  viewCam(camId) {
+    console.log(camId);
     this.navCtrl.push('CameraViewPage');
   }
 

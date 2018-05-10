@@ -1,5 +1,8 @@
 page-camera-list {
-  .status-icon {
+  .card {
+    position: relative;
+  }
+  .right-status {
     position: absolute;
     top: 20px;
     right: 22px;

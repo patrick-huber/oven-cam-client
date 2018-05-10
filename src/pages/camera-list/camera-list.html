@@ -13,25 +13,27 @@
 </ion-header>
 
 <ion-content>
-
-  <div *ngFor='let camera of _cameras'>
-    Battery level: {{camera?.battery_level}}
-  </div>
-
   <ion-list>
-    <ion-card (click)="cardClick()">
-      <ion-icon name='power' class='status-icon' color="danger"></ion-icon>
+    <ion-card *ngFor='let camera of _cameras'>
       <!-- Todo: Show last image capture? <img src="img/nin-live.png"/> -->
       <ion-card-content>
-        <ion-card-title>Downstairs Kitchen</ion-card-title>
+        <ion-card-title>{{camera?.name}}</ion-card-title>
         <!-- <p>
           The most popular industrial group ever, and largely
           responsible for bringing the music to a mass audience.
         </p> -->
+        <div class="right-status">
+          <ion-icon *ngIf="camera?.status === 'offline'" name='power' class='status-icon' color="danger"></ion-icon>
+          <div *ngIf="camera?.status === 'online'">
+            {{camera?.battery_level}}%
+            <ion-icon padding-right name="{{camera?.charging ? 'battery-charging' : 'battery-full'}}" class='status-icon' color="{{camera?.charging ? 'success' : 'black'}}"></ion-icon>
+            <ion-icon name='power' class='status-icon' color="success"></ion-icon>
+          </div>
+        </div>
       </ion-card-content>
       <ion-row no-padding>
         <ion-col>
-          <button disabled ion-button clear small icon-start>
+          <button [disabled]="camera?.status === 'offline'" (click)="viewCam(camera?.id)" ion-button clear small icon-start>
             <ion-icon name='eye'></ion-icon>
             View Live Cam
           </button>
@@ -44,22 +46,5 @@
         </ion-col>
       </ion-row>
     </ion-card>
-    <!-- <ion-item-sliding *ngFor="let item of currentItems">
-      
-      <button ion-item (click)="openItem(item)">
-        <ion-avatar item-start>
-          <img [src]="item.profilePic" />
-        </ion-avatar>
-        <h2>{{item.name}}</h2>
-        <p>{{item.about}}</p>
-        <ion-note item-end *ngIf="item.note">{{item.note}}</ion-note>
-      </button>
-
-      <ion-item-options>
-        <button ion-button color="danger" (click)="deleteItem(item)">
-          {{ 'DELETE_BUTTON' | translate }}
-        </button>
-      </ion-item-options>
-    </ion-item-sliding> -->
   </ion-list>
 </ion-content>
