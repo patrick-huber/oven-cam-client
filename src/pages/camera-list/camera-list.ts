@@ -34,6 +34,7 @@ export class CameraListPage {
   _cameras: Array<CameraOptions> = [];
   _user: any = null;
   _camerasCollection: AngularFirestoreCollection<any>;
+  _cameras_loaded: boolean = false;
 
   constructor(
     public navCtrl: NavController,
@@ -45,15 +46,19 @@ export class CameraListPage {
     public user: User) {
       this._user = user.currentUser;
       this._camerasCollection = this.afs.collection('cameras');
+
       this.afs.collection('users').doc(this._user.uid).collection<any>('cameras').valueChanges()
         .subscribe((cameras: any) => {
-          console.log('subscribe fire');
-          this._cameras = [];
-          for (var i = cameras.length - 1; i >= 0; i--) {
-            this.getCamera(cameras[i].id);
+          if(cameras.length > 0) {
+            this._cameras = [];
+            for (var i = cameras.length - 1; i >= 0; i--) {
+              this.getCamera(cameras[i].id);
+            }
+          } else {
+            this._cameras_loaded = true;
           }
-          console.log(this._cameras)
-      });
+        });
+        // Todo: add error messaging for firestore observable
   }
 
   getCamera(cameraId) {

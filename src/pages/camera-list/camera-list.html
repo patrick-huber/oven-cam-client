@@ -46,5 +46,22 @@
         </ion-col>
       </ion-row>
     </ion-card>
+    <ion-card *ngIf='(!_cameras_loaded) && (_cameras.length === 0)'>
+      <ion-card-content>
+        <ion-card-title>Loading cams</ion-card-title>
+        <p>
+          Please wait for cameras to load...
+        </p>
+      </ion-card-content>
+    </ion-card>
+    <ion-card *ngIf='(_cameras_loaded) && (_cameras.length === 0)'>
+      <ion-card-content>
+        <ion-card-title>No cams found</ion-card-title>
+        <button ion-button icon-left block (click)="addCamera()">
+          <ion-icon name="add"></ion-icon>
+          Add new cam
+        </button>
+      </ion-card-content>
+    </ion-card>
   </ion-list>
 </ion-content>
