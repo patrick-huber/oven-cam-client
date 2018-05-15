@@ -21,12 +21,15 @@ export class CameraViewPage {
   imgSrc: string = '';
   streamInterval: any;
 
+  cam_name: string = '';
+
   _timers: any = this.timers.timers;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public timers: Timers) {
+    this.cam_name = navParams.get('name');
     this.httpSrc = 'http://' + navParams.get('ip_address');
     this.ogSrc = this.httpSrc + '/images/still.jpg';
     this.imgSrc = this.httpSrc + this.ogSrc;

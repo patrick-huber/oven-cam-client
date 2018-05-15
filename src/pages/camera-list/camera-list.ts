@@ -91,11 +91,11 @@ export class CameraListPage {
     let foundCamera: any[] = this._cameras.filter(function( obj ) {
       return obj.id === cameraId;
     });
-    console.log('foundCamera: ' + foundCamera);
     let ip = foundCamera[0].local_ip;
-    console.log('ip: ' + ip);
+    let cam_name = foundCamera[0].name;
     this.navCtrl.push('CameraViewPage', {
-      ip_address: ip
+      ip_address: ip,
+      name: cam_name
     });
   }
 
