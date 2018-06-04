@@ -62,6 +62,7 @@
   <div *ngIf="currentStep === 'success'">
     <h2>Wifi setup successful!</h2>
     <p>Your oven cam is setup!</p>
-      <button ion-button color="primary" block>View camera</button>
+      <button ion-button color="primary" block (click)="goHome()">Back to cameras</button>
+      <!-- Todo - add button to view camera directly after setup -->
   </div>
 </ion-content>

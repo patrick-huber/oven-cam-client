@@ -22,14 +22,15 @@ export class CameraAddPage {
 
   wifi: { networks: string[], name: string, password: string } = {
     networks: [],
-    name: '',
-    password: ''
+    name: 'SKYNET',
+    password: '9522156386'
   };
 
 
   constructor(public navCtrl: NavController, 
               private ble: BLE,
-              private ngZone: NgZone) { 
+              private ngZone: NgZone,
+              private user: User) { 
   }
 
   // ASCII only
@@ -100,18 +101,24 @@ export class CameraAddPage {
   }
 
   // Todo: connect and get wifi networks from camera
-  // This is not currently used, but saving for future reference
-  readBLE() {
-    this.ble.read(this.devices[0].id, 'a018', 'ec00')
+  // 'ec00' = wifi networks - WIP
+  // 'ec01' = cam_id after wifi setup is complete 
+  readBLE(characteristicId) {
+    this.ble.read(this.devices[0].id, 'a018', characteristicId)
       .then(
         data => {
+          this.disconnect();
           data = this.bytesToString(data);
-          this.setStatus(data);
-          // this.wifi.networks = data.split(',');
-          // this.currentStep = 'wifi';
-          // this.ngZone.run(function(){});
+          let dataObj: object = {
+            'id': data
+          }
+          this.user.createDoc('cameras', dataObj);
+          this.currentStep = 'success';
+          this.ngZone.run(function(){});
         },
-        e => this.setStatus('Error getting available networks.')
+        e => {
+          this.setStatus(e);
+        }
       );
   }
 
@@ -127,12 +134,11 @@ export class CameraAddPage {
 
   writeBLE(device, service, characteristic, value): any {
     this.ble.write(device, service, characteristic, value).then(
-      () => {
-        this.disconnect();
-        this.currentStep = 'success';
-        this.ngZone.run(function(){});
-      },
-      e => this.setStatus('Error connecting to wifi')
+      (result) => {
+        this.setStatus(result);
+        // Get cam id
+        this.readBLE(characteristic);
+      }
     );
   }
 
@@ -147,5 +153,9 @@ export class CameraAddPage {
     // this.ngZone.run(() => {
     //   this.statusMessage = message;
     // });
+  }
+
+  goHome() {
+    this.navCtrl.pop();
   }
 }

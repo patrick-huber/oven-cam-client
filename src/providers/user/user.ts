@@ -31,7 +31,7 @@ export class User {
     private platform: Platform,
     events: Events) {
       this.usersCollection = afs.collection('users');
-        afAuth.authState.subscribe((user: firebase.User) => {
+      afAuth.authState.subscribe((user: firebase.User) => {
         if (!user) {
           console.log('no user logged in')
           return this._user = null;
@@ -171,18 +171,12 @@ export class User {
     return this._user = res;
   }
 
-  setSettings(value) {
-    // this.usersCollection.doc(user.uid)
-    // .update().then(function(doc) {
-    //   if (doc.exists) {
-    //     console.log("Document data:", doc.data());
-    //   } else {
-    //     // doc.data() will be undefined in this case
-    //     console.log("No such document!");
-    //   }
-    // }).catch(function(error) {
-    //   console.log("Error getting document:", error);
-    // });
+  createDoc(docLocation: string, docObj: object) {
+    var userDocLocation: string = 'users/' + this._user.uid + '/' + docLocation;
+    this.afs.collection(userDocLocation)
+    .add(docObj).then(documentReference => {
+      console.log(`Added document with name: ${documentReference.id}`);
+    });
   }
 
   get currentUser() {
