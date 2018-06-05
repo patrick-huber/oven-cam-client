@@ -9,10 +9,9 @@
 
 <ion-content padding>
   <div *ngIf="currentStep === 'scan'">
-
+    <div *ngIf="devices.length === 0">
     <h2>Find camera</h2>
     <p>Please make sure your oven camera is on, then click the search button.</p>
-    <div *ngIf="devices.length === 0">
       <button ion-button color="primary" block (click)="scan()">Search for camera</button>
     </div>
     <div *ngIf="devices.length === 1">
@@ -31,6 +30,7 @@
   </div>
 
   <div *ngIf="currentStep === 'wifi'">
+    <button ion-button (click)="readBLE('ec01')" color="primary" block>Read data</button>
     <h2>Wifi Info</h2>
     <p>Please enter your Wifi username and password so we can get your camera connected and setup.</p>
     <form (submit)="submitWifi()">

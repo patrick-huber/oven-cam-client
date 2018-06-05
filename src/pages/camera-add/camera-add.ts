@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { IonicPage, NavController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, ToastController, LoadingController } from 'ionic-angular';
 import { BLE } from '@ionic-native/ble';
 
 import { User } from '../../providers/providers';
@@ -14,7 +14,6 @@ import { MainPage } from '../pages';
 
 export class CameraAddPage {
   devices: any[] = [];
-  statusMessage: string;
   currentStep: string = 'scan';
 
   ovenCamUUID: string[] = ['a018']; // This will only search for the unique oven cam UUID
@@ -30,6 +29,8 @@ export class CameraAddPage {
   constructor(public navCtrl: NavController, 
               private ble: BLE,
               private ngZone: NgZone,
+              public toastCtrl: ToastController,
+              public loadingCtrl: LoadingController,
               private user: User) { 
   }
 
@@ -50,20 +51,42 @@ export class CameraAddPage {
     this.scan();
   }
 
+  ionViewWillLeave() {
+    this.disconnect();
+    this.devices = [];
+  }
+
+  resetSteps() {
+    // Reset back to connect step
+    this.currentStep = 'scan';
+    this.ngZone.run(function(){});
+    // restart scan
+    this.scan();
+  }
+
   scan() {
-    // this.setStatus('Scanning for Bluetooth LE Devices');
+    let loading = this.loadingCtrl.create({
+      content: 'Searching for oven cam...'
+    });
+    loading.present();
     
     this.devices = [];  // clear list
 
     this.ble.scan(this.ovenCamUUID, 5).subscribe(
       device => {
         if(device.name === 'oven-cam') {
+          loading.dismiss();
           this.onDeviceDiscovered(device)
         } else {
+          loading.dismiss();
           this.scanError('Found device, but wrong name');
         }
       },
-      error => this.scanError(error)
+      error => {
+        loading.dismiss();
+        this.scanError('scan error')
+        this.scanError(error)
+      }
     );
 
     // setTimeout(this.setStatus.bind(this), 5000, 'Scan complete');
@@ -87,16 +110,24 @@ export class CameraAddPage {
   }
 
   connect() {
-    var device: any = this.devices[0];
+    let loading = this.loadingCtrl.create({
+      content: 'Connecting to oven-cam...'
+    });
+    loading.present();
 
-    // this.setStatus('Connecting to oven-cam...');
+    var device: any = this.devices[0];
 
     this.ble.connect(device.id).subscribe(
       device => {
+        loading.dismiss();
         this.currentStep = 'wifi';
         this.ngZone.run(function(){});
       },
-      error => this.setStatus(error)
+      error => {
+        loading.dismiss();
+        this.setStatus('Disconnected from camera. Please try again.')
+        this.resetSteps();
+      }
     );
   }
 
@@ -133,26 +164,47 @@ export class CameraAddPage {
   }
 
   writeBLE(device, service, characteristic, value): any {
+    let loading = this.loadingCtrl.create({
+      content: 'Connecting oven cam to wifi...'
+    });
+    loading.present();
+
     this.ble.write(device, service, characteristic, value).then(
-      (result) => {
-        this.setStatus(result);
-        // Get cam id
-        this.readBLE(characteristic);
+      result => {
+        this.setStatus('writeBLE success... result:');
+        this.setStatus(result)
+
+        if(result === 'OK') {
+          loading.dismiss();
+          // Wifi connected successfully, now get cam id
+          this.setStatus('result OK');
+          //this.readBLE(characteristic);
+        } else {
+          loading.dismiss();
+          this.setStatus('Unable to connect camera to wifi. Please check network name and passwork and try again.');
+        }
+      },
+      e => {
+        loading.dismiss();
+        this.scanError('writeBLE error:');
+        this.setStatus('Unable to connect camera to wifi. Please check network name and passwork and try again.');
       }
     );
   }
 
   disconnect() {
-    this.ble.disconnect(this.devices[0].id).then(
-      e => this.setStatus('Error disconnecting')
-    );;
+    this.ble.disconnect(this.devices[0].id).then(() => {
+      
+    });
   }
 
   setStatus(message) {
-    alert(message);
-    // this.ngZone.run(() => {
-    //   this.statusMessage = message;
-    // });
+    let toast = this.toastCtrl.create({
+      message: message,
+      duration: 5000,
+      position: 'top'
+    });
+    toast.present();
   }
 
   goHome() {
