@@ -21,8 +21,8 @@ export class CameraAddPage {
 
   wifi: { networks: string[], name: string, password: string } = {
     networks: [],
-    name: 'SKYNET',
-    password: '9522156386'
+    name: '',
+    password: ''
   };
 
 
@@ -145,7 +145,7 @@ export class CameraAddPage {
           this.ngZone.run(function(){});
         },
         e => {
-          this.setStatus(e);
+          this.setStatus('readBLE error:');
         }
       );
   }
@@ -168,22 +168,18 @@ export class CameraAddPage {
 
     this.ble.write(device, service, characteristic, value).then(
       result => {
-        this.setStatus('writeBLE success... result:');
-        this.setStatus(result)
-
         if(result === 'OK') {
           loading.dismiss();
           // Wifi connected successfully, now get cam id
-          this.setStatus('result OK');
-          //this.readBLE(characteristic);
+          this.readBLE(characteristic);
         } else {
+          // Todo: is this else ever used/needed?
           loading.dismiss();
           this.setStatus('Unable to connect camera to wifi. Please check network name and passwork and try again.');
         }
       },
       e => {
         loading.dismiss();
-        this.scanError('writeBLE error:');
         this.setStatus('Unable to connect camera to wifi. Please check network name and passwork and try again.');
       }
     );
