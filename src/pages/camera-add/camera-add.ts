@@ -71,25 +71,22 @@ export class CameraAddPage {
     loading.present();
     
     this.devices = [];  // clear list
-
-    this.ble.scan(this.ovenCamUUID, 5).subscribe(
+    this.ble.startScan(this.ovenCamUUID).subscribe(
       device => {
         if(device.name === 'oven-cam') {
+          this.ble.stopScan();
+          clearInterval(timeout);
           loading.dismiss();
           this.onDeviceDiscovered(device)
-        } else {
-          loading.dismiss();
-          this.scanError('Found device, but wrong name');
         }
-      },
-      error => {
-        loading.dismiss();
-        this.scanError('scan error')
-        this.scanError(error)
       }
     );
 
-    // setTimeout(this.setStatus.bind(this), 5000, 'Scan complete');
+    let timeout = setTimeout(() => {
+      loading.dismiss();
+      this.ble.stopScan();
+      this.setStatus('No oven cam found.')
+    }, 5000);
   }
 
   // If location permission is denied, you'll end up here

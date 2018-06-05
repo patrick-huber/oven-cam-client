@@ -16,15 +16,6 @@
     </div>
     <div *ngIf="devices.length === 1">
       <h3>Camera Found!</h3>
-      <button ion-button (click)="connect()" color="primary" block>Next step</button>
-    </div>
-  </div>
-
-  <div *ngIf="currentStep === 'connect'">
-    
-    <h2>Connect to camera</h2>
-    <p>Now we need to connect to the camera to setup the wifi.</p>
-    <div *ngIf="devices.length === 1">
       <button ion-button (click)="connect()" color="primary" block>Connect to camera</button>
     </div>
   </div>
