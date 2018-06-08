@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform, ActionSheetController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController, Platform, ActionSheetController, AlertController } from 'ionic-angular';
 
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
 
@@ -40,6 +40,7 @@ export class CameraListPage {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
+    public modalCtrl: ModalController,
     public platform: Platform,
     public actionSheetCtrl: ActionSheetController,
     private alertCtrl: AlertController,
@@ -96,7 +97,9 @@ export class CameraListPage {
   }
 
   addCamera() {
-    this.navCtrl.push('CameraAddPage');
+    let profileModal = this.modalCtrl.create('CameraAddPage');
+    profileModal.present();
+    // this.navCtrl.push('CameraAddPage');
   }
 
   viewCam(cameraId) {

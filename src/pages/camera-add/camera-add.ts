@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { IonicPage, NavController, ToastController, LoadingController } from 'ionic-angular';
+import { IonicPage, ViewController, ToastController, LoadingController } from 'ionic-angular';
 import { BLE } from '@ionic-native/ble';
 
 import { User } from '../../providers/providers';
@@ -26,7 +26,7 @@ export class CameraAddPage {
   };
 
 
-  constructor(public navCtrl: NavController, 
+  constructor(public viewCtrl: ViewController, 
               private ble: BLE,
               private ngZone: NgZone,
               public toastCtrl: ToastController,
@@ -208,6 +208,6 @@ export class CameraAddPage {
   }
 
   goHome() {
-    this.navCtrl.pop();
+    this.viewCtrl.dismiss();
   }
 }
