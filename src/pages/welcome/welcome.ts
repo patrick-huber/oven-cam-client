@@ -31,7 +31,8 @@ export class WelcomePage {
       });
   }
 
-  ionViewWillEnter() {
+  ionViewDidLeave() {
+    this.events.unsubscribe('user:loaded');
   }
 
   gotoHome() {

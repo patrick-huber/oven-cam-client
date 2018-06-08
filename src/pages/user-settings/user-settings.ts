@@ -1,8 +1,6 @@
-import { Component, Input } from '@angular/core';
-import { EmailValidator } from '@angular/forms';
-import { IonicPage, NavController, NavParams, ToastController, AlertController } from 'ionic-angular';
-import { AngularFirestore, AngularFirestoreDocument } from 'angularfire2/firestore';
-import { Observable } from 'rxjs/Observable';
+import { Component, Input, ViewChild } from '@angular/core';
+// import { EmailValidator } from '@angular/forms';
+import { App, IonicPage, NavController, ToastController, AlertController } from 'ionic-angular';
 
 import { User } from '../../providers/providers';
 
@@ -23,7 +21,7 @@ export class UserSettingsPage {
 
   @Input() email: string = '';
 
-  constructor(public toastCtrl: ToastController, private alertCtrl: AlertController, public user: User) {
+  constructor(private app: App, public toastCtrl: ToastController, private alertCtrl: AlertController, public user: User, public navCtrl: NavController) {
     this.currentUser = user.currentUser;
     this.email = this.currentUser.email;
   }
@@ -104,11 +102,8 @@ export class UserSettingsPage {
     toast.present();
   }
 
-  ionViewDidLoad() {
-  }
-
-
-  ionViewWillEnter() {
-    
+  logout() {
+    this.app.getRootNav().setRoot('WelcomePage');
+    this.currentUser = this.user.logout(); // need to figure out "missing or insufficent permissions" error
   }
 }
