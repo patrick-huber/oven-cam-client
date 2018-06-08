@@ -116,13 +116,14 @@ export class CameraAddPage {
 
     this.ble.connect(device.id).subscribe(
       device => {
+        // Try reading characteristic to see if cam is setup already
+        this.readBLE('ec01');
+        // Todo - get returned promise from readBLE before closing loading message
         loading.dismiss();
-        this.currentStep = 'wifi';
-        this.ngZone.run(function(){});
       },
       error => {
         loading.dismiss();
-        this.setStatus('Disconnected from camera. Please try again.')
+        this.setStatus('Unable to connect to camera. Please try again.')
         this.resetSteps();
       }
     );
@@ -135,14 +136,20 @@ export class CameraAddPage {
     this.ble.read(this.devices[0].id, 'a018', characteristicId)
       .then(
         data => {
-          this.disconnect();
           data = this.bytesToString(data);
-          let dataObj: object = {
-            'id': data
+          if(data) { // todo - check if we get 0 or null value when not setup
+            this.disconnect();
+            let dataObj: object = {
+              'id': data
+            }
+            this.user.createDoc('cameras', dataObj);
+            this.currentStep = 'success';
+            this.ngZone.run(function(){});
+          } else {
+            // Camera not setup - go to wifi setup
+            this.currentStep = 'wifi';
+            this.ngZone.run(function(){});
           }
-          this.user.createDoc('cameras', dataObj);
-          this.currentStep = 'success';
-          this.ngZone.run(function(){});
         },
         e => {
           this.setStatus('readBLE error:');

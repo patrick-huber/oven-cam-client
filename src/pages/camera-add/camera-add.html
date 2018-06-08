@@ -21,7 +21,6 @@
   </div>
 
   <div *ngIf="currentStep === 'wifi'">
-    <button ion-button (click)="readBLE('ec01')" color="primary" block>Read data</button>
     <h2>Wifi Info</h2>
     <p>Please enter your Wifi username and password so we can get your camera connected and setup.</p>
     <form (submit)="submitWifi()">
