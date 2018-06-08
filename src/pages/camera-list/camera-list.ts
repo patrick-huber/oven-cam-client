@@ -57,6 +57,7 @@ export class CameraListPage {
               this.getCamera(cameras[i].id);
             }
           } else {
+            this._cameras = [];
             this._cameras_loaded = true;
           }
         });
