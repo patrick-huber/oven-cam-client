@@ -171,12 +171,9 @@ export class User {
     return this._user = res;
   }
 
-  createDoc(docLocation: string, docObj: object) {
+  createDoc(docLocation: string, docObj: object, docId: string) {
     var userDocLocation: string = 'users/' + this._user.uid + '/' + docLocation;
-    this.afs.collection(userDocLocation)
-    .add(docObj).then(documentReference => {
-      console.log(`Added document with name: ${documentReference.id}`);
-    });
+    this.afs.collection(userDocLocation).doc(docId).set(docObj);
   }
 
   get currentUser() {

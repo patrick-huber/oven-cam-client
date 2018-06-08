@@ -34,6 +34,7 @@ export class CameraListPage {
   _cameras: Array<CameraOptions> = [];
   _user: any = null;
   _camerasCollection: AngularFirestoreCollection<any>;
+  _userCamerasCollection: AngularFirestoreCollection<any>;
   _cameras_loaded: boolean = false;
 
   constructor(
@@ -46,8 +47,9 @@ export class CameraListPage {
     public user: User) {
       this._user = user.currentUser;
       this._camerasCollection = this.afs.collection('cameras');
+      this._userCamerasCollection = this.afs.collection('users').doc(this._user.uid).collection<any>('cameras')  ;
 
-      this.afs.collection('users').doc(this._user.uid).collection<any>('cameras').valueChanges()
+      this._userCamerasCollection.valueChanges()
         .subscribe((cameras: any) => {
           if(cameras.length > 0) {
             this._cameras = [];
@@ -82,6 +84,10 @@ export class CameraListPage {
       name: new_name
     }, {merge: true});
     // todo: add success and error messaging
+  }
+
+  deleteCamera(cameraId) {
+    this._userCamerasCollection.doc(cameraId).delete();
   }
 
   ionViewDidLoad() {
@@ -142,7 +148,23 @@ export class CameraListPage {
           role: 'destructive',
           icon: !this.platform.is('ios') ? 'trash' : null,
           handler: () => {
-            console.log('Delete clicked');
+            let alert = this.alertCtrl.create({
+                title: 'Delete cam',
+                subTitle: 'Are you sure you want to delete this cam? This will not reset the camera or remove from other users.',
+                buttons: [
+                  {
+                    text: 'Cancel',
+                    role: 'cancel'
+                  },
+                  {
+                    text: 'Delete',
+                    handler: data => {
+                      this.deleteCamera(cameraId);
+                    }
+                  }
+                ]
+            });
+            alert.present();
           }
         },
         {

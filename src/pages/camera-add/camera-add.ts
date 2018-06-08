@@ -135,14 +135,14 @@ export class CameraAddPage {
   readBLE(characteristicId) {
     this.ble.read(this.devices[0].id, 'a018', characteristicId)
       .then(
-        data => {
-          data = this.bytesToString(data);
-          if(data) { // todo - check if we get 0 or null value when not setup
+        camId => {
+          camId = this.bytesToString(camId);
+          if(camId) { // todo - check if we get 0 or null value when not setup
             this.disconnect();
             let dataObj: object = {
-              'id': data
+              'id': camId
             }
-            this.user.createDoc('cameras', dataObj);
+            this.user.createDoc('cameras', dataObj, camId);
             this.currentStep = 'success';
             this.ngZone.run(function(){});
           } else {
