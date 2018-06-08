@@ -52,8 +52,10 @@ export class CameraAddPage {
   }
 
   ionViewWillLeave() {
-    this.disconnect();
-    this.devices = [];
+    if(this.devices.length > 0) {
+      this.disconnect();
+      this.devices = [];
+    }
   }
 
   resetSteps() {
