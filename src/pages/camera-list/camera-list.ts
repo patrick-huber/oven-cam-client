@@ -70,21 +70,28 @@ export class CameraListPage {
     // Need to add check for invalid camera reference. This will happen on a manual reset of the camera
     cameraDoc.snapshotChanges().subscribe(
       (camera: any) => {
+        let camera_index: number = -1;
+        camera_index = this._cameras.findIndex(camera => camera.id === cameraId);
         if(camera.payload.exists) {
-          camera.payload.data().id = cameraId;
+          let cam_data = camera.payload.data();
+          cam_data.id = cameraId;
           // Check if cam aleady in array
-          let camera_index: number = -1;
-          camera_index = this._cameras.findIndex(camera => camera.id === cameraId);
           if(camera_index === -1){
             // no camera in cameras array, push new camera object
-            this._cameras.push(camera.payload.data());
+            this._cameras.push(cam_data);
           } else {
-            // camera already in arry, update current object
-            this._cameras[camera_index] = camera;
+            // camera already in array, update current object
+            this._cameras[camera_index] = cam_data;
           }
         } else {
           // Camera doc not found - remove from user cameras list
+          if(camera_index !== -1){
+            // camera  in array, remove camera object
+            this._cameras.splice(camera_index,1);
+          }
+          // Disassociate from user camera collection
           this._userCamerasCollection.doc(cameraId).delete();
+
           let alert = this.alertCtrl.create({
             title: 'Cam reset',
             subTitle: 'One of the cameras linked to your account was reset. Please setup cam again to view.',
@@ -193,7 +200,6 @@ export class CameraListPage {
         },
         {
           text: 'Reset',
-          role: 'destructive',
           icon: !this.platform.is('ios') ? 'refresh' : null,
           handler: () => {
             let alert = this.alertCtrl.create({
