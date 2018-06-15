@@ -32,7 +32,7 @@ export class CameraViewPage {
     this.cam_name = navParams.get('name');
     this.httpSrc = 'http://' + navParams.get('ip_address');
     this.ogSrc = this.httpSrc + '/images/still.jpg';
-    this.imgSrc = this.httpSrc + this.ogSrc;
+    this.imgSrc = this.httpSrc + '/images/loading.jpg';
     this.startStream();
   }
 
