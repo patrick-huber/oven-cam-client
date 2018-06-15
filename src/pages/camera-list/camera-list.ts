@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, Platform, ActionSheetController, AlertController } from 'ionic-angular';
 
-import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 
 import { Observable } from 'rxjs/Observable';
 
@@ -66,19 +66,39 @@ export class CameraListPage {
   }
 
   getCamera(cameraId) {
-    this._camerasCollection.doc(cameraId).valueChanges().subscribe((camera: any) => {
-      camera.id = cameraId;
-      // Check if cam aleady in array
-      let camera_index: number = -1;
-      camera_index = this._cameras.findIndex(camera => camera.id === cameraId);
-      if(camera_index === -1){
-        // no camera in cameras array, push new camera object
-        this._cameras.push(camera);
-      } else {
-        // camera already in arry, update current object
-        this._cameras[camera_index] = camera;
+    let cameraDoc: AngularFirestoreDocument<CameraOptions> = this._camerasCollection.doc(cameraId);
+    // Need to add check for invalid camera reference. This will happen on a manual reset of the camera
+    cameraDoc.snapshotChanges().subscribe(
+      (camera: any) => {
+        if(camera.payload.exists) {
+          camera.payload.data().id = cameraId;
+          // Check if cam aleady in array
+          let camera_index: number = -1;
+          camera_index = this._cameras.findIndex(camera => camera.id === cameraId);
+          if(camera_index === -1){
+            // no camera in cameras array, push new camera object
+            this._cameras.push(camera.payload.data());
+          } else {
+            // camera already in arry, update current object
+            this._cameras[camera_index] = camera;
+          }
+        } else {
+          // Camera doc not found - remove from user cameras list
+          this._userCamerasCollection.doc(cameraId).delete();
+          let alert = this.alertCtrl.create({
+            title: 'Cam reset',
+            subTitle: 'One of the cameras linked to your account was reset. Please setup cam again to view.',
+            buttons: [
+              {
+                text: 'Close',
+                role: 'cancel'
+              }
+            ]
+        });
+        alert.present();
+        }
       }
-    });
+    );
   }
 
   renameCamera(cameraId, new_name) {
@@ -165,6 +185,24 @@ export class CameraListPage {
                     handler: data => {
                       this.deleteCamera(cameraId);
                     }
+                  }
+                ]
+            });
+            alert.present();
+          }
+        },
+        {
+          text: 'Reset',
+          role: 'destructive',
+          icon: !this.platform.is('ios') ? 'refresh' : null,
+          handler: () => {
+            let alert = this.alertCtrl.create({
+                title: 'Reset cam',
+                subTitle: 'To reset cam to factory settings, press and hold the power button on the cam for 10 seconds. This may take a few minutes to complete.',
+                buttons: [
+                  {
+                    text: 'Close',
+                    role: 'cancel'
                   }
                 ]
             });
